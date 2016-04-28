@@ -4,6 +4,13 @@
 This repository will be used to host my *booru-related cogs. They're used to fetch images.
 
 ## Cogs
+### Dan
+Fetches anime-related images from https://danbooru.donmai.us/
+
+#### Commands
+`[p]dan [tags]` fetches the latest image with the entered tags  
+`[p]danr [tags]` fetches a random image, optionally with the entered tags  
+
 ### Pony
 Fetches pony-related images from http://derpiboo.ru/
 
