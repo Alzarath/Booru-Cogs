@@ -31,9 +31,9 @@ class Pony:
                     url = "http:" + result["search"][0]["image"]
                     await self.bot.say(url)
                 else:
-                    await self.bot.say("Your search terms gave no results.")                         
+                    await self.bot.say("Your search terms gave no results.")
             except:     
-                await self.bot.say("Error.")          
+                await self.bot.say("Error.")
         else:   
             await send_cmd_help(ctx)
 
@@ -62,13 +62,20 @@ class Pony:
             except:
                 await self.bot.say("Error.")
         else:
-            async with aiohttp.get("https://derpiboo.ru/search.json?q=*&random_image=y&filter_id=" + self.availablefilters[ponyfilter]) as r:
-                result = await r.json()
-            imgid = str(result["id"])
-            async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
-                result = await r.json()
-            url = result["image"]
-            await self.bot.say("http:" + url )
+            try:
+                search = "https://derpiboo.ru/search.json?q=*&random_image=y&filter_id=" + self.availablefilters[ponyfilter] 
+                async with aiohttp.get(search) as r:
+                    result = await r.json()
+                if "id" in result:
+                    imgid = str(result["id"])
+                    async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
+                        result = await r.json()
+                    url = "http://" + result["image"]
+                    await self.bot.say(url)
+                else:
+                    await self.bot.say("Your search terms gave no results.")
+            except:
+                await self.bot.say("Error.")
 
     @commands.group(pass_context = True)
     async def ponyfilter(self, ctx):
