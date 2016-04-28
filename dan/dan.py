@@ -9,7 +9,8 @@ class Dan:
 
     @commands.command(pass_context=True,no_pm=True)
     async def dan(self, ctx, *text):
-        """Retrieves the latest result from Danbooru"""
+        """Retrieves the latest result from Danbooru
+           Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
             try:
@@ -35,7 +36,8 @@ class Dan:
 
     @commands.command(pass_context=True,no_pm=True)
     async def danr(self, ctx, *text):
-        """Retrieves a random result from Danbooru"""
+        """Retrieves a random result from Danbooru
+           Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
             try:
