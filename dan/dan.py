@@ -25,7 +25,6 @@ class Dan:
             try:
                 msg = "+".join(text)
                 search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
-                print(search)
                 async with aiohttp.get(search) as r:
                     result = await r.json()
                 if result != []:
@@ -53,7 +52,7 @@ class Dan:
         if len(text) > 0:
             try:
                 msg = "+".join(text)
-                search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
+                search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&random=y" + "&tags=" + msg + check_info()
                 async with aiohttp.get(search) as r:
                     result = await r.json()
                 if result != []:
@@ -73,22 +72,18 @@ class Dan:
         else:
             try:
                 msg = "+".join(text)
-                search = "http://danbooru.donmai.us/posts.json?limit=1&random=y"
-                check_info(search)
+                search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&random=y" + check_info()
                 async with aiohttp.get(search) as r:
                     result = await r.json()
-                if result != []:
-                    if "success" not in result:
-                        for index in range(len(result)): # Goes through each result until it finds one that works
-                            if "file_url" in result[index]:
-                                url = "http://danbooru.donmai.us" + result[index]["file_url"]
-                                await self.bot.say(url)
-                                return
-                        await self.bot.say("Cannot find an image that can not be viewed by you.")
-                    else:
-                        await self.bot.say(result["message"] + ".")
+                if "success" not in result:
+                    for index in range(len(result)): # Goes through each result until it finds one that works
+                        if "file_url" in result[index]:
+                            url = "http://danbooru.donmai.us" + result[index]["file_url"]
+                            await self.bot.say(url)
+                            return
+                    await self.bot.say("Cannot find an image that can be viewed by you.")
                 else:
-                    await self.bot.say("Your search terms gave no results.")
+                    await self.bot.say(result["message"] + ".")
             except:
                 await self.bot.say("Error.")
 
