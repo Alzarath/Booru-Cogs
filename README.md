@@ -3,6 +3,16 @@
 ## Description
 This repository will be used to host my *booru-related cogs. They're used to fetch images.
 
+## Installation
+To install these cogs, make sure Red-DiscordBot is up-to-date and add the repository.  
+`[p]cog repo add booru-cogs https://github.com/alzarath/Booru-Cogs`
+
+You can then list and install the available cogs.  
+`[p]cog list booru-cogs`
+
+Need more help with installation? RTFM  
+`[p]help cog` and `[p]help cog install`
+
 ## Cogs
 ### Dan
 Fetches anime-related images from https://danbooru.donmai.us/
@@ -27,13 +37,6 @@ Fetches pony-related images from http://derpiboo.ru/
 ¹Commands may only be used by users with the manage_server permission  
 ²Commands may only be used by the bot owner  
 ³IDs can be found at http://derpiboo.ru/filters/ (https://derpiboo.ru/filters/<ID Number>)
-
-## Installation
-To install any of these cogs, make sure you're at least at commit [71240e5](https://github.com/Twentysix26/Red-DiscordBot/commit/71240e56a0245eb68054c86a5a6236a1a2650fd7) of Red-Discordbot, then add the repository.  
-`[p]cog repo add booru-cogs https://github.com/alzarath/Booru-Cogs`
-
-You can then list and install the available cogs.  
-`[p]cog list booru-cogs`
 
 ## Assistance
 Need help? Have an idea for a new booru-related cog? Post an issue or contact me (Alzarath#8039) from the official [Red - Discord Bot Discord Server](https://discord.gg/0k4npTwMvTpv9wrh).
