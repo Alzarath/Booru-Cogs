@@ -1,0 +1,6 @@
+{
+    "AUTHOR" : "Alzarath",
+    "DESCRIPTION" : "Usage: [p]gel [text...] to get the first result\nUsage: [p]gelr [text...] to get a random result\n\nSearch http://gelbooru.com/ for anime pictures.\n\nDisclaimer: This cog can and will display NSFW content.",
+    "DISABLED" : false,
+    "NAME" : "Searches for and posts anime pictures"
+}

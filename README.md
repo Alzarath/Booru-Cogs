@@ -18,15 +18,23 @@ Need more help with installation? RTFM
 Fetches anime-related images from https://danbooru.donmai.us/
 
 #### Commands
-`[p]dan [tags]` fetches the latest image with the entered tags  
-`[p]danr [tags]` fetches a random image, optionally with the entered tags  
+`[p]dan [tags...]` fetches the latest image with the entered tags  
+`[p]danr [tags...]` fetches a random image, optionally with the entered tags  
+
+## Cogs
+### Gel
+Fetches anime-related images from https://gelbooru.com/
+
+#### Commands
+`[p]gel [tags...]` fetches the latest image with the entered tags  
+`[p]gelr [tags...]` fetches a random image, optionally with the entered tags  
 
 ### Pony
 Fetches pony-related images from http://derpiboo.ru/
 
 #### Commands
-`[p]pony [tags]` fetches the latest image with the entered tags  
-`[p]ponyr [tags]` fetches a random image, optionally with the entered tags  
+`[p]pony [tags...]` fetches the latest image with the entered tags  
+`[p]ponyr [tags...]` fetches a random image, optionally with the entered tags  
 `[p]ponyfilter [option]` is used to adjust filter options  
 `[p]ponyfilter list` displays all of the available filters  
 `[p]ponyfilter set [name]`¹ is used to set the current filter for the current server  
