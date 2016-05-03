@@ -21,7 +21,20 @@ Fetches anime-related images from https://danbooru.donmai.us/
 `[p]dan [tags...]` fetches the latest image with the entered tags  
 `[p]danr [tags...]` fetches a random image, optionally with the entered tags  
 
-## Cogs
+### e621
+Fetches furry-related images from https://e621.net/
+
+#### Commands
+`[p]e621 [tags...]` fetches the latest image with the entered tags  
+`[p]e621r [tags...]` fetches a random image, optionally with the entered tags  
+
+### Furry
+Fetches furry-related images from http://furry.booru.org/
+
+#### Commands
+`[p]furry [tags...]` fetches the latest image with the entered tags  
+`[p]furryr [tags...]` fetches a random image, optionally with the entered tags  
+
 ### Gel
 Fetches anime-related images from https://gelbooru.com/
 
