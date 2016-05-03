@@ -26,9 +26,9 @@ class Pony:
                 msg = "+".join(text)
                 search = "https://derpiboo.ru/search.json?q=" + msg + "&filter_id=" + self.availablefilters[ponyfilter]
                 async with aiohttp.get(search) as r:
-                    result = await r.json()
-                if result["search"] != []:
-                    url = "http:" + result["search"][0]["image"]
+                    website = await r.json()
+                if website["search"] != []:
+                    url = "http:" + website["search"][0]["image"]
                     await self.bot.say(url)
                 else:
                     await self.bot.say("Your search terms gave no results.")
@@ -50,12 +50,12 @@ class Pony:
                 msg = "+".join(text)
                 search = "https://derpiboo.ru/search.json?q=" + msg + "&random_image=y&filter_id=" + self.availablefilters[ponyfilter] 
                 async with aiohttp.get(search) as r:
-                    result = await r.json()
-                if "id" in result:
-                    imgid = str(result["id"])
+                    website = await r.json()
+                if "id" in website:
+                    imgid = str(website["id"])
                     async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
-                        result = await r.json()
-                    url = "http:" + result["image"]
+                        website = await r.json()
+                    url = "http:" + website["image"]
                     await self.bot.say(url)
                 else:
                     await self.bot.say("Your search terms gave no results.")
@@ -65,12 +65,12 @@ class Pony:
             try:
                 search = "https://derpiboo.ru/search.json?q=*&random_image=y&filter_id=" + self.availablefilters[ponyfilter] 
                 async with aiohttp.get(search) as r:
-                    result = await r.json()
-                if "id" in result:
-                    imgid = str(result["id"])
+                    website = await r.json()
+                if "id" in website:
+                    imgid = str(website["id"])
                     async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
-                        result = await r.json()
-                    url = "http://" + result["image"]
+                        website = await r.json()
+                    url = "http://" + website["image"]
                     await self.bot.say(url)
                 else:
                     await self.bot.say("Your search terms gave no results.")

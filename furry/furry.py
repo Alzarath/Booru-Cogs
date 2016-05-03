@@ -19,8 +19,8 @@ class Furry:
                 msg = "+".join(text)
                 search = "http://furry.booru.org/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
                 async with aiohttp.get(search) as r:
-                    result = await r.text()
-                attr = result.split('"')[1::2]
+                    website = await r.text()
+                attr = website.split('"')[1::2]
                 cindex = 0
                 while cindex != -1:
                     if attr[cindex] == "UTF-8":
@@ -29,8 +29,8 @@ class Furry:
                     else:
                         cindex += 1
                 if count > 0:
-                    newresult = xml.etree.ElementTree.fromstring(result)
-                    url = newresult[0].get('file_url')
+                    result = xml.etree.ElementTree.fromstring(website)
+                    url = result[0].get('file_url')
                     await self.bot.say(url)
                     return
                 else:
@@ -49,8 +49,8 @@ class Furry:
             msg = "+".join(text)
             search = "http://furry.booru.org/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
             async with aiohttp.get(search) as r:
-                result = await r.text()
-            attr = result.split('"')[1::2]
+                website = await r.text()
+            attr = website.split('"')[1::2]
             cindex = 0
             while cindex != -1:
                 if attr[cindex] == "UTF-8":
@@ -62,9 +62,9 @@ class Furry:
                 pid = str(random.randrange(0, count-1)) # Generates a random number between 0 and the amount of available images
                 search = "http://furry.booru.org/index.php?page=dapi&s=post&q=index&limit=1&pid=" + pid + "&tags=" + msg
                 async with aiohttp.get(search) as r:
-                    result = await r.text()
-                newresult = xml.etree.ElementTree.fromstring(result)
-                url = newresult[0].get('file_url')
+                    website = await r.text()
+                result = xml.etree.ElementTree.fromstring(website)
+                url = result[0].get('file_url')
                 await self.bot.say(url)
                 return
             else:
