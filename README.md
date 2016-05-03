@@ -42,6 +42,13 @@ Fetches anime-related images from https://gelbooru.com/
 `[p]gel [tags...]` fetches the latest image with the entered tags  
 `[p]gelr [tags...]` fetches a random image, optionally with the entered tags  
 
+### Loli
+Fetches loli-related images from https://lolibooru.moe/
+
+#### Commands
+`[p]loli [tags...]` fetches the latest image with the entered tags  
+`[p]lolir [tags...]` fetches a random image, optionally with the entered tags  
+
 ### Pony
 Fetches pony-related images from http://derpiboo.ru/
 
