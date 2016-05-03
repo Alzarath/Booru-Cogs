@@ -1,6 +1,6 @@
 {
     "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]dan [text...] to get the first result\nUsage: [p]danr [text...] to get a random result\n\nSearch http://danbooru.donmai.us/ for anime pictures.\n\nDisclaimer: This cog can and will display NSFW content.",
+    "DESCRIPTION" : "Usage: [p]furry [text...] to get the first result\nUsage: [p]furryr [text...] to get a random result\n\nSearch http://furry.booru.org/ for furry pictures.\n\nDisclaimer: This cog can and will display NSFW content.",
     "DISABLED" : false,
-    "NAME" : "Searches for and posts anime pictures"
+    "NAME" : "Searches for and posts furry pictures"
 }
