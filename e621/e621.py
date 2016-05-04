@@ -20,7 +20,6 @@ class E621:
                 search = "http://e621.net/post/index.json?limit=1&tags=" + msg
                 async with aiohttp.get(search) as r:
                     website = await r.json()
-                print("Debug")
                 if website != []:
                     url = website[0]["file_url"]
                     await self.bot.say(url)
@@ -42,7 +41,6 @@ class E621:
                 search = "http://e621.net/post/index.json?limit=1&tags=order:random+" + msg
                 async with aiohttp.get(search) as r:
                     website = await r.json()
-                print("Debug")
                 if website != []:
                     url = website[0]["file_url"]
                     await self.bot.say(url)
@@ -56,7 +54,6 @@ class E621:
                 search = "http://e621.net/post/index.json?limit=1&tags=order:random"
                 async with aiohttp.get(search) as r:
                     website = await r.json()
-                print("Debug")
                 if website != []:
                     url = website[0]["file_url"]
                     await self.bot.say(url)

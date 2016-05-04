@@ -20,7 +20,6 @@ class Loli:
                 search = "https://lolibooru.moe/post/index.json?limit=1&tags=" + msg
                 async with aiohttp.get(search) as r:
                     website = await r.json()
-                print("Debug")
                 if website != []:
                     url = website[0]["file_url"]
                     url = url.replace(" ", "+")
@@ -43,7 +42,6 @@ class Loli:
                 search = "https://lolibooru.moe/post/index.json?limit=1&tags=order:random+" + msg
                 async with aiohttp.get(search) as r:
                     website = await r.json()
-                print("Debug")
                 if website != []:
                     url = website[0]["file_url"]
                     url = url.replace(" ", "+")
@@ -58,7 +56,6 @@ class Loli:
                 search = "https://lolibooru.moe/post/index.json?limit=1&tags=order:random"
                 async with aiohttp.get(search) as r:
                     website = await r.json()
-                print("Debug")
                 if website != []:
                     url = website[0]["file_url"]
                     url = url.replace(" ", "+")
