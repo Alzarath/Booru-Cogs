@@ -18,22 +18,10 @@ class Pony:
         """Retrieves the latest result from Derpibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            if server.id in self.activefilters:
-                ponyfilter = self.activefilters[server.id]
-            else:
-                ponyfilter = "default"
-            try:
-                msg = "+".join(text)
-                search = "https://derpiboo.ru/search.json?q=" + msg + "&filter_id=" + self.availablefilters[ponyfilter]
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if website["search"] != []:
-                    url = "http:" + website["search"][0]["image"]
-                    await self.bot.say(url)
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:     
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "https://derpiboo.ru/search.json?q=" + msg
+            url = await fetch_image(self=self.bot, ctx=ctx, randomize=False, search=search)
+            await self.bot.say(url)
         else:   
             await send_cmd_help(ctx)
 
@@ -41,41 +29,16 @@ class Pony:
     async def ponyr(self, ctx, *text):
         """Retrieves a random result from Derpibooru"""
         server = ctx.message.server
-        if server.id in self.activefilters:
-            ponyfilter = self.activefilters[server.id]
-        else:
-            ponyfilter = "default"
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "https://derpiboo.ru/search.json?q=" + msg + "&random_image=y&filter_id=" + self.availablefilters[ponyfilter] 
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if "id" in website:
-                    imgid = str(website["id"])
-                    async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
-                        website = await r.json()
-                    url = "http:" + website["image"]
-                    await self.bot.say(url)
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "https://derpiboo.ru/search.json?q=" + msg
+            url = await fetch_image(self=self.bot, ctx=ctx, randomize=True, search=search)
+            await self.bot.say(url)
         else:
-            try:
-                search = "https://derpiboo.ru/search.json?q=*&random_image=y&filter_id=" + self.availablefilters[ponyfilter] 
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if "id" in website:
-                    imgid = str(website["id"])
-                    async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
-                        website = await r.json()
-                    url = "http://" + website["image"]
-                    await self.bot.say(url)
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "https://derpiboo.ru/search.json?q=*"
+            url = await fetch_image(self=self.bot, ctx=ctx, randomize=True, search=search)
+            await self.bot.say(url)
 
     @commands.group(pass_context = True)
     async def ponyfilter(self, ctx):
@@ -133,6 +96,36 @@ class Pony:
             await self.bot.say("Filter set to '{}'.".format(filtername))
         else:
             await self.bot.say("'{}' does not exist in the filter list.".format(filtername))
+
+async def fetch_image(self, ctx, randomize, search):
+    server = ctx.message.server
+    self.availablefilters = fileIO("data/pony/availablefilters.json","load")
+    self.activefilters = fileIO("data/pony/activefilters.json","load")
+
+    if server.id in self.activefilters:
+        search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
+    else:
+        search += "&filter_id=" + self.availablefilters["default"]
+    try:
+        if randomize == True:
+            search += "&random_image=y"
+        async with aiohttp.get(search) as r:
+            website = await r.json()
+        if randomize == True:
+            if "id" in website:
+                imgid = str(website["id"])
+                async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
+                    website = await r.json()
+                return "http://" + website["image"]
+            else:
+                return "Your search terms gave no results."
+        else:
+            if website["search"] != []:
+                return "http:" + website["search"][0]["image"]
+            else:
+                return "Your search terms gave no results."
+    except:     
+        return "Error."
 
 def check_folder():
     if not os.path.exists("data/pony"):

@@ -15,19 +15,10 @@ class Loli:
            Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "https://lolibooru.moe/post/index.json?limit=1&tags=" + msg
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if website != []:
-                    url = website[0]["file_url"]
-                    url = url.replace(" ", "+")
-                    await self.bot.say(url)
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "https://lolibooru.moe/post/index.json?limit=1&tags=" + msg
+            url = await fetch_image(randomize=False, search=search)
+            await self.bot.say(url)
         else:
             await send_cmd_help(ctx)
 
@@ -37,33 +28,29 @@ class Loli:
            Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "https://lolibooru.moe/post/index.json?limit=1&tags=order:random+" + msg
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if website != []:
-                    url = website[0]["file_url"]
-                    url = url.replace(" ", "+")
-                    await self.bot.say(url)
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "https://lolibooru.moe/post/index.json?limit=1&tags=" + msg
+            url = await fetch_image(randomize=True, search=search)
+            await self.bot.say(url)
         else:
-            try:
-                msg = "+".join(text)
-                search = "https://lolibooru.moe/post/index.json?limit=1&tags=order:random"
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if website != []:
-                    url = website[0]["file_url"]
-                    url = url.replace(" ", "+")
-                    await self.bot.say(url)
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "https://lolibooru.moe/post/index.json?limit=1"
+            url = await fetch_image(randomize=True, search=search)
+            await self.bot.say(url)
+
+async def fetch_image(randomize, search):
+    try:
+        if randomize == True:
+            search += "+order:random"
+        async with aiohttp.get(search) as r:
+            website = await r.json()
+        if website != []:
+            url = website[0]["file_url"]
+            return url.replace(" ", "+")
+        else:
+            return "Your search terms gave no results."
+    except:
+        return "Error."
 
 def setup(bot):
     bot.add_cog(Loli(bot))

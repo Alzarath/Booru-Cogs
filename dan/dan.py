@@ -22,25 +22,10 @@ class Dan:
            Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if website != []:
-                    if "success" not in website:
-                        for index in range(len(website)): # Goes through each result until it finds one that works
-                            if "file_url" in website[index]:
-                                url = "http://danbooru.donmai.us" + website[index]["file_url"]
-                                await self.bot.say(url)
-                                return
-                        await self.bot.say("Cannot find an image that can be viewed by you.")
-                    else:
-                        await self.bot.say(website["message"] + ".")
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
+            url = await fetch_image(randomize=False, search=search)
+            await self.bot.say(url)
         else:
             await send_cmd_help(ctx)
 
@@ -50,42 +35,33 @@ class Dan:
            Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&random=y" + "&tags=" + msg + check_info()
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if website != []:
-                    if "success" not in website:
-                        for index in range(len(website)): # Goes through each result until it finds one that works
-                            if "file_url" in website[index]:
-                                url = "http://danbooru.donmai.us" + website[index]["file_url"]
-                                await self.bot.say(url)
-                                return
-                        await self.bot.say("Cannot find an image that can not be viewed by you.")
-                    else:
-                        await self.bot.say(website["message"] + ".")
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
+            url = await fetch_image(randomize=True, search=search)
+            await self.bot.say(url)
         else:
-            try:
-                msg = "+".join(text)
-                search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&random=y" + check_info()
-                async with aiohttp.get(search) as r:
-                    website = await r.json()
-                if "success" not in website:
-                    for index in range(len(website)): # Goes through each result until it finds one that works
-                        if "file_url" in website[index]:
-                            url = "http://danbooru.donmai.us" + website[index]["file_url"]
-                            await self.bot.say(url)
-                            return
-                    await self.bot.say("Cannot find an image that can be viewed by you.")
-                else:
-                    await self.bot.say(website["message"] + ".")
-            except:
-                await self.bot.say("Error.")
+            search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + check_info()
+            url = await fetch_image(randomize=True, search=search)
+            await self.bot.say(url)
+
+async def fetch_image(randomize, search):
+    try:
+        if randomize == True:
+            search += "&random=y"
+        async with aiohttp.get(search) as r:
+            website = await r.json()
+        if website != []:
+            if "success" not in website:
+                for index in range(len(website)): # Goes through each result until it finds one that works
+                    if "file_url" in website[index]:
+                        return "http://danbooru.donmai.us" + website[index]["file_url"]
+                return "Cannot find an image that can be viewed by you."
+            else:
+                returnwebsite["message"] + "."
+        else:
+            return "Your search terms gave no results."
+    except:
+        return "Error."
 
 def check_info():
     searchappend = ""

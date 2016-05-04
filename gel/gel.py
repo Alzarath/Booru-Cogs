@@ -15,30 +15,12 @@ class Gel:
            Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
-                async with aiohttp.get(search) as r:
-                    website = await r.text()
-                attr = website.split('"')[1::2]
-                cindex = 0
-                while cindex != -1:
-                    if attr[cindex] == "UTF-8":
-                        count = int(attr[cindex+1])
-                        cindex = -1
-                    else:
-                        cindex += 1
-                if count > 0:
-                    result = xml.etree.ElementTree.fromstring(website)
-                    url = result[0].get('file_url')
-                    await self.bot.say(url)
-                    return
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
+            url = await fetch_image(randomize=False, search=search)
+            await self.bot.say(url)
         else:
-            await send_cmd_help(ctx)
+            send_cmd_help(ctx)
 
     @commands.command(pass_context=True,no_pm=True)
     async def gelr(self, ctx, *text):
@@ -46,58 +28,39 @@ class Gel:
            Warning: Can and will display NSFW images"""
         server = ctx.message.server
         if len(text) > 0:
-            try:
-                msg = "+".join(text)
-                search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
-                async with aiohttp.get(search) as r:
-                    website = await r.text()
-                attr = website.split('"')[1::2]
-                cindex = 0
-                while cindex != -1:
-                    if attr[cindex] == "UTF-8":
-                        count = int(attr[cindex+1])
-                        cindex = -1
-                    else:
-                        cindex += 1
-                if count > 0:
-                    pid = str(round(count * random.random())) # Generates a random number between 0 and the amount of available images
-                    search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&pid=" + pid + "&tags=" + msg # Grabs an image at the generated number index
-                    async with aiohttp.get(search) as r:
-                        website = await r.text()
-                    result = xml.etree.ElementTree.fromstring(website)
-                    url = result[0].get('file_url')
-                    await self.bot.say(url)
-                    return
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            msg = "+".join(text)
+            search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
+            url = await fetch_image(randomize=True, search=search)
+            await self.bot.say(url)
         else:
-            try:
-                search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1"
+            search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1"
+            url = await fetch_image(randomize=True, search=search)
+            await self.bot.say(url)
+
+async def fetch_image(randomize, search):
+    try:
+        async with aiohttp.get(search) as r:
+            website = await r.text()
+        attr = website.split('"')[1::2]
+        cindex = 0
+        while cindex != -1:
+            if attr[cindex] == "UTF-8":
+                count = int(attr[cindex+1])
+                cindex = -1
+            else:
+                cindex += 1
+        if count > 0:
+            if randomize == True:
+                pid = str(round(count * random.random())) # Generates a random number between 0 and the amount of available images
+                search += "&pid=" + pid # Grabs an image at the generated number index
                 async with aiohttp.get(search) as r:
                     website = await r.text()
-                attr = website.split('"')[1::2]
-                cindex = 0
-                while cindex != -1:
-                    if attr[cindex] == "UTF-8":
-                        count = int(attr[cindex+1])
-                        cindex = -1
-                    else:
-                        cindex += 1
-                if count > 0:
-                    pid = str(round(count * random.random())) # Generates a random number between 0 and the amount of available images
-                    search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&pid=" + pid # Grabs an image at the generated number index
-                    async with aiohttp.get(search) as r:
-                        website = await r.text()
-                    result = xml.etree.ElementTree.fromstring(website)
-                    url = result[0].get('file_url')
-                    await self.bot.say(url)
-                    return
-                else:
-                    await self.bot.say("Your search terms gave no results.")
-            except:
-                await self.bot.say("Error.")
+            result = xml.etree.ElementTree.fromstring(website)
+            return result[0].get('file_url')
+        else:
+            return "Your search terms gave no results."
+    except:
+        return "Error."
 
 def setup(bot):
     bot.add_cog(Gel(bot))
