@@ -51,34 +51,33 @@ class Pony:
     @ponyfilter.command(name="add")
     @checks.is_owner()
     async def _add_ponyfilter(self, filtername, filterid):
-        """Adds a filter to the global filter list
+        """Adds a filter to the global pony filter list
 
            Filter IDs can be found in the filter list (https://derpiboo.ru/filters/**ID**)
 
            Example: !ponyfilter add legacy 37431"""
         self.availablefilters[filtername] = filterid
         fileIO("data/pony/availablefilters.json","save",self.availablefilters)
-        await self.bot.say("Filter '{}' added to the global filter list.".format(filtername))
+        await self.bot.say("Filter '{}' added to the global pony filter list.".format(filtername))
 
     @ponyfilter.command(name="del")
     @checks.is_owner()
     async def _add_ponyfilter(self, filtername):
-        """Deletes a filter from the global filter list
+        """Deletes a filter from the global pony filter list
 
            Example: !ponyfilter del legacy"""
         for i in self.availablefilters:
             if self.availablefilters[i] == self.availablefilters[filtername]:
                 self.availablefilters.pop(i)
                 fileIO("data/pony/availablefilters.json","save",self.availablefilters)
-                await self.bot.say("Filter '{}' deleted from the global filter list.".format(filtername))
+                await self.bot.say("Filter '{}' deleted from the global pony filter list.".format(filtername))
                 break
 
     @ponyfilter.command(name="list")
     async def _list_ponyfilter(self):
-        """Lists all of the filters available in the global filter list."""
-        filters = self.availablefilters
+        """Lists all of the filters available in the global pony filter list."""
         filterlist = '\n'.join(sorted(self.availablefilters))
-        await self.bot.say("The global filter list contains:\n" + filterlist)
+        await self.bot.say("The global pony filter list contains:```\n" + filterlist + "```")
 
     @ponyfilter.command(name="set", pass_context=True)
     @checks.mod_or_permissions(manage_server=True)
@@ -116,7 +115,7 @@ async def fetch_image(self, ctx, randomize, search):
                 imgid = str(website["id"])
                 async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
                     website = await r.json()
-                return "http://" + website["image"]
+                return "http:" + website["image"]
             else:
                 return "Your search terms gave no results."
         else:
