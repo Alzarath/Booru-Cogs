@@ -32,6 +32,7 @@ Fetches furry-related images from https://e621.net/
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
     - `del`¹ deletes the current server's filter list, making them use the default
+
 ### Gel
 Fetches anime-related images from https://gelbooru.com/
 
