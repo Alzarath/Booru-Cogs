@@ -20,7 +20,7 @@ class Pony:
         if len(text) > 0:
             msg = "+".join(text)
             search = "https://derpiboo.ru/search.json?q=" + msg
-            url = await fetch_image(self=self.bot, ctx=ctx, randomize=False, search=search)
+            url = await fetch_image(self, ctx, randomize=False, search=search)
             await self.bot.say(url)
         else:   
             await send_cmd_help(ctx)
@@ -32,12 +32,12 @@ class Pony:
         if len(text) > 0:
             msg = "+".join(text)
             search = "https://derpiboo.ru/search.json?q=" + msg
-            url = await fetch_image(self=self.bot, ctx=ctx, randomize=True, search=search)
+            url = await fetch_image(self, ctx, randomize=True, search=search)
             await self.bot.say(url)
         else:
             msg = "+".join(text)
             search = "https://derpiboo.ru/search.json?q=*"
-            url = await fetch_image(self=self.bot, ctx=ctx, randomize=True, search=search)
+            url = await fetch_image(self, ctx, randomize=True, search=search)
             await self.bot.say(url)
 
     @commands.group(pass_context = True)
@@ -104,7 +104,7 @@ async def fetch_image(self, ctx, randomize, search):
     if server.id in self.activefilters:
         search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
     else:
-        search += "&filter_id=" + self.activefilters["default"]
+        search += "&filter_id=" + self.availablefilters["default"]
     try:
         if randomize == True:
             search += "&random_image=y"
