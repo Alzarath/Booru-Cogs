@@ -32,20 +32,16 @@ Fetches furry-related images from https://e621.net/
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
     - `del`¹ deletes the current server's filter list, making them use the default
-
-### Furry
-Fetches furry-related images from http://furry.booru.org/
-
-#### Commands
-- `[p]furry [tags...]` fetches the latest image with the entered tags  
-- `[p]furryr [tags...]` fetches a random image, optionally with the entered tags  
-
 ### Gel
 Fetches anime-related images from https://gelbooru.com/
 
 #### Commands
 - `[p]gel [tags...]` fetches the latest image with the entered tags  
 - `[p]gelr [tags...]` fetches a random image, optionally with the entered tags  
+    - `list` display all the tags from the current server's filter list  
+    - `add [tag]`¹ adds a tag to the current server's filter list  
+    - `del [tag]`¹ deletes a tag from the current server's filter list
+    - `del`¹ deletes the current server's filter list, making them use the default
 
 ### Loli
 Fetches loli-related images from https://lolibooru.moe/
@@ -53,6 +49,10 @@ Fetches loli-related images from https://lolibooru.moe/
 #### Commands
 - `[p]loli [tags...]` fetches the latest image with the entered tags  
 - `[p]lolir [tags...]` fetches a random image, optionally with the entered tags  
+    - `list` display all the tags from the current server's filter list  
+    - `add [tag]`¹ adds a tag to the current server's filter list  
+    - `del [tag]`¹ deletes a tag from the current server's filter list
+    - `del`¹ deletes the current server's filter list, making them use the default
 
 ### Pony
 Fetches pony-related images from http://derpiboo.ru/
@@ -66,7 +66,7 @@ Fetches pony-related images from http://derpiboo.ru/
     - `add [name] [id]`² adds a filter associated with an id³ to the filter list  
     - `del [name]`² deletes a filter from the filter list
 
-#### Annotations
+## Annotations
 ¹Commands may only be used by users with the manage_server permission  
 ²Commands may only be used by the bot owner  
 ³IDs can be found at http://derpiboo.ru/filters/ (https://derpiboo.ru/filters/<ID Number>)
