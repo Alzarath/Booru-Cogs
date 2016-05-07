@@ -1,6 +1,0 @@
-{
-    "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]furry [text...] to get the first result\nUsage: [p]furryr [text...] to get a random result\n\nSearch http://furry.booru.org/ for furry pictures.\n\nDisclaimer: This cog can and will display NSFW content.",
-    "DISABLED" : false,
-    "NAME" : "Searches for and posts furry pictures"
-}

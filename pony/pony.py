@@ -62,7 +62,7 @@ class Pony:
 
     @ponyfilter.command(name="del")
     @checks.is_owner()
-    async def _add_ponyfilter(self, filtername):
+    async def _del_ponyfilter(self, filtername):
         """Deletes a filter from the global pony filter list
 
            Example: !ponyfilter del legacy"""
@@ -104,7 +104,7 @@ async def fetch_image(self, ctx, randomize, search):
     if server.id in self.activefilters:
         search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
     else:
-        search += "&filter_id=" + self.availablefilters["default"]
+        search += "&filter_id=" + self.activefilters["default"]
     try:
         if randomize == True:
             search += "&random_image=y"
