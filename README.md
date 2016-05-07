@@ -18,48 +18,53 @@ Need more help with installation? RTFM
 Fetches anime-related images from https://danbooru.donmai.us/
 
 #### Commands
-`[p]dan [tags...]` fetches the latest image with the entered tags  
-`[p]danr [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]dan [tags...]` fetches the latest image with the entered tags  
+- `[p]danr [tags...]` fetches a random image, optionally with the entered tags  
 
 ### e621
 Fetches furry-related images from https://e621.net/
 
 #### Commands
-`[p]e621 [tags...]` fetches the latest image with the entered tags  
-`[p]e621r [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]e621 [tags...]` fetches the latest image with the entered tags  
+- `[p]e621r [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]e621filter [option]` is used to adjust filter options  
+    - `list` display all the tags from the current server's filter list  
+    - `add [tag]`¹ adds a tag to the current server's filter list  
+    - `del [tag]`¹ deletes a tag from the current server's filter list
+    - `del`¹ deletes the current server's filter list, making them use the default
 
 ### Furry
 Fetches furry-related images from http://furry.booru.org/
 
 #### Commands
-`[p]furry [tags...]` fetches the latest image with the entered tags  
-`[p]furryr [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]furry [tags...]` fetches the latest image with the entered tags  
+- `[p]furryr [tags...]` fetches a random image, optionally with the entered tags  
 
 ### Gel
 Fetches anime-related images from https://gelbooru.com/
 
 #### Commands
-`[p]gel [tags...]` fetches the latest image with the entered tags  
-`[p]gelr [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]gel [tags...]` fetches the latest image with the entered tags  
+- `[p]gelr [tags...]` fetches a random image, optionally with the entered tags  
 
 ### Loli
 Fetches loli-related images from https://lolibooru.moe/
 
 #### Commands
-`[p]loli [tags...]` fetches the latest image with the entered tags  
-`[p]lolir [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]loli [tags...]` fetches the latest image with the entered tags  
+- `[p]lolir [tags...]` fetches a random image, optionally with the entered tags  
 
 ### Pony
 Fetches pony-related images from http://derpiboo.ru/
 
 #### Commands
-`[p]pony [tags...]` fetches the latest image with the entered tags  
-`[p]ponyr [tags...]` fetches a random image, optionally with the entered tags  
-`[p]ponyfilter [option]` is used to adjust filter options  
-`[p]ponyfilter list` displays all of the available filters  
-`[p]ponyfilter set [name]`¹ is used to set the current filter for the current server  
-`[p]ponyfilter add [name] [id]`² adds a filter associated with an id³ to the filter list  
-`[p]ponyfilter del [name]`² deletes a filter from the filter list
+- `[p]pony [tags...]` fetches the latest image with the entered tags  
+- `[p]ponyr [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]ponyfilter [option]` is used to adjust filter options  
+    - `list` displays all of the available filters  
+    - `set [name]`¹ is used to set the current filter for the current server  
+    - `add [name] [id]`² adds a filter associated with an id³ to the filter list  
+    - `del [name]`² deletes a filter from the filter list
 
 #### Annotations
 ¹Commands may only be used by users with the manage_server permission  
