@@ -13,7 +13,7 @@ class E621:
         self.bot = bot
         self.filters = fileIO("data/e621/filters.json","load")
 
-    @commands.command(pass_context=True,no_pm=True)
+    @commands.command(pass_context=True, no_pm=True)
     async def e621(self, ctx, *text):
         """Retrieves the latest result from e621"""
         server = ctx.message.server
@@ -25,7 +25,7 @@ class E621:
         else:
             await send_cmd_help(ctx)
 
-    @commands.command(pass_context=True,no_pm=True)
+    @commands.command(pass_context=True, no_pm=True)
     async def e621r(self, ctx, *text):
         """Retrieves a random result from e621"""
         server = ctx.message.server
@@ -49,7 +49,7 @@ class E621:
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
 
-    @e621filter.command(name="add", pass_context=True)
+    @e621filter.command(name="add", pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_server=True)
     async def _add_e621filter(self, ctx, filtertag : str):
         """Adds a tag to the server's e621 filter list
@@ -66,7 +66,7 @@ class E621:
         fileIO("data/e621/filters.json","save",self.filters)
         await self.bot.say("Filter '{}' added to the e621 filter list.".format(filtertag))
 
-    @e621filter.command(name="del", pass_context=True)
+    @e621filter.command(name="del", pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_server=True)
     async def _del_e621filter(self, ctx, filtertag : str=""):
         """Deletes a tag from the server's e621 filter list
