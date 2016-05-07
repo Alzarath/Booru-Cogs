@@ -23,7 +23,7 @@ class Dan:
         server = ctx.message.server
         if len(text) > 0:
             msg = "+".join(text)
-            search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
+            search = "http://danbooru.donmai.us/posts.json?limit={}&tags={}{}".format(str(settings["IMAGE_LIMIT"]), msg, check_info())
             url = await fetch_image(randomize=False, search=search)
             await self.bot.say(url)
         else:
@@ -36,11 +36,11 @@ class Dan:
         server = ctx.message.server
         if len(text) > 0:
             msg = "+".join(text)
-            search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + "&tags=" + msg + check_info()
+            search = "http://danbooru.donmai.us/posts.json?limit={}&tags={}{}".format(str(settings["IMAGE_LIMIT"]), msg, check_info())
             url = await fetch_image(randomize=True, search=search)
             await self.bot.say(url)
         else:
-            search = "http://danbooru.donmai.us/posts.json?limit=" + str(settings["IMAGE_LIMIT"]) + check_info()
+            search = "http://danbooru.donmai.us/posts.json?limit={}{}".format(str(settings["IMAGE_LIMIT"]), check_info())
             url = await fetch_image(randomize=True, search=search)
             await self.bot.say(url)
 
@@ -54,10 +54,10 @@ async def fetch_image(randomize, search):
             if "success" not in website:
                 for index in range(len(website)): # Goes through each result until it finds one that works
                     if "file_url" in website[index]:
-                        return "http://danbooru.donmai.us" + website[index]["file_url"]
+                        return "http://danbooru.donmai.us{}".format(website[index]["file_url"])
                 return "Cannot find an image that can be viewed by you."
             else:
-                returnwebsite["message"] + "."
+                "{}.".format(returnwebsite["message"])
         else:
             return "Your search terms gave no results."
     except:
@@ -66,11 +66,11 @@ async def fetch_image(randomize, search):
 def check_info():
     searchappend = ""
     if settings["USERNAME"] != "":
-        searchappend += "&login=" + settings["USERNAME"]
+        searchappend += "&login={}".format(settings["USERNAME"])
         if settings["API_KEY"] == "":
             print("You must set API_KEY in cogs/dan.py for USERNAME to be relevant.")
     if settings["API_KEY"] != "":
-        searchappend += "&api_key=" + settings["API_KEY"]
+        searchappend += "&api_key={}".format(settings["API_KEY"])
         if settings["USERNAME"] == "":
             print("You must set USERNAME in cogs/dan.py for API_KEY to be relevant.")
     return searchappend

@@ -130,7 +130,7 @@ def check_folder():
         os.makedirs("data/e621")
 
 def check_files():
-    filters = {"default":["rating:s", "-grimdark", "-suggestive"]}
+    filters = {"default":["rating:safe", "-grimdark", "-suggestive"]}
 
     if not fileIO("data/e621/filters.json", "check"):
         print ("Creating default e621 filters.json...")
