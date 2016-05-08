@@ -5,8 +5,6 @@ from .utils import checks
 from __main__ import send_cmd_help
 import os
 import aiohttp
-import random
-import xml
 
 MAX_SERVER_TAGS = 50
 
