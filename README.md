@@ -39,6 +39,7 @@ Fetches anime-related images from https://gelbooru.com/
 #### Commands
 - `[p]gel [tags...]` fetches the latest image with the entered tags  
 - `[p]gelr [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]gelfilter [option]` is used to adjust filter options  
     - `list` display all the tags from the current server's filter list  
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
@@ -50,6 +51,7 @@ Fetches loli-related images from https://lolibooru.moe/
 #### Commands
 - `[p]loli [tags...]` fetches the latest image with the entered tags  
 - `[p]lolir [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]lolifilter [option]` is used to adjust filter options  
     - `list` display all the tags from the current server's filter list  
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
