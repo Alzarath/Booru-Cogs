@@ -61,7 +61,7 @@ class Gel:
             self.filters[server.id] = self.filters["default"]
             fileIO("data/gel/filters.json","save",self.filters)
             self.filters = fileIO("data/gel/filters.json","load")
-        if len(self.filters[server.id]) > MAX_SERVER_TAGS:
+        if len(self.filters[server.id]) > MAX_FILTER_TAGS:
             return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
         self.filters[server.id].append(filtertag)
         fileIO("data/gel/filters.json","save",self.filters)
