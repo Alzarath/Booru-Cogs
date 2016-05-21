@@ -8,7 +8,7 @@ import aiohttp
 import random
 import xml
 
-MAX_SERVER_TAGS = 50
+MAX_FILTER_TAGS = 50
 
 class Gel:
     def __init__(self, bot):
@@ -26,7 +26,7 @@ class Gel:
             url = await fetch_image(self, ctx, randomize=False, search=search)
             await self.bot.say(url)
         else:
-            send_cmd_help(ctx)
+            await send_cmd_help(ctx)
 
     @commands.command(pass_context=True,no_pm=True)
     async def gelr(self, ctx, *text):
@@ -36,12 +36,10 @@ class Gel:
         if len(text) > 0:
             msg = "+".join(text)
             search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
-            url = await fetch_image(self, ctx, randomize=True, search=search)
-            await self.bot.say(url)
         else:
             search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags="
-            url = await fetch_image(self, ctx, randomize=True, search=search)
-            await self.bot.say(url)
+        url = await fetch_image(self, ctx, randomize=True, search=search)
+        await self.bot.say(url)
 
     @commands.group(pass_context=True)
     async def gelfilter(self, ctx):

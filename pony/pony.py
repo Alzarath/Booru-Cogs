@@ -32,13 +32,10 @@ class Pony:
         if len(text) > 0:
             msg = "+".join(text)
             search = "https://derpiboo.ru/search.json?q=" + msg
-            url = await fetch_image(self, ctx, randomize=True, search=search)
-            await self.bot.say(url)
         else:
-            msg = "+".join(text)
             search = "https://derpiboo.ru/search.json?q=*"
-            url = await fetch_image(self, ctx, randomize=True, search=search)
-            await self.bot.say(url)
+        url = await fetch_image(self, ctx, randomize=True, search=search)
+        await self.bot.say(url)
 
     @commands.group(pass_context = True)
     async def ponyfilter(self, ctx):

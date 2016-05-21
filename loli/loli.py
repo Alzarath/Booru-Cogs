@@ -6,7 +6,7 @@ from __main__ import send_cmd_help
 import os
 import aiohttp
 
-MAX_SERVER_TAGS = 50
+MAX_FILTER_TAGS = 50
 
 class Loli:
     def __init__(self, bot):
@@ -34,13 +34,10 @@ class Loli:
         if len(text) > 0:
             msg = "+".join(text)
             search = "https://lolibooru.moe/post/index.json?limit=1&tags={}".format(msg)
-            url = await fetch_image(self, ctx, randomize=True, search=search)
-            await self.bot.say(url)
         else:
-            msg = "+".join(text)
             search = "https://lolibooru.moe/post/index.json?limit=1&tags="
-            url = await fetch_image(self, ctx, randomize=True, search=search)
-            await self.bot.say(url)
+        url = await fetch_image(self, ctx, randomize=True, search=search)
+        await self.bot.say(url)
 
     @commands.group(pass_context=True)
     async def lolifilter(self, ctx):

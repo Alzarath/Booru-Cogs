@@ -37,12 +37,10 @@ class Dan:
         if len(text) > 0:
             msg = "+".join(text)
             search = "http://danbooru.donmai.us/posts.json?limit={}&tags={}{}".format(str(settings["IMAGE_LIMIT"]), msg, check_info())
-            url = await fetch_image(randomize=True, search=search)
-            await self.bot.say(url)
         else:
             search = "http://danbooru.donmai.us/posts.json?limit={}{}".format(str(settings["IMAGE_LIMIT"]), check_info())
-            url = await fetch_image(randomize=True, search=search)
-            await self.bot.say(url)
+        url = await fetch_image(randomize=True, search=search)
+        await self.bot.say(url)
 
 async def fetch_image(randomize, search):
     try:
