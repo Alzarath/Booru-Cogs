@@ -1,6 +1,6 @@
 {
     "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]loli [text...] to get the first result\nUsage: [p]lolir [text...] to get a random result\n\nSearch https://lolibooru.moe/ for loli (child(-like) anime girls) pictures.\n\nDisclaimer: This cog can and will display NSFW content.",
+    "DESCRIPTION" : "Usage: [p]loli [text...] to get the first result\nUsage: [p]lolir [text...] to get a random result\n\nSearch https://lolibooru.moe/ for loli (child(-like) anime girls) pictures.\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
     "DISABLED" : false,
     "NAME" : "Searches for and posts furry pictures"
 }
