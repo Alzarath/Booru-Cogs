@@ -15,8 +15,7 @@ class Loli:
 
     @commands.command(pass_context=True,no_pm=True)
     async def loli(self, ctx, *text):
-        """Retrieves the latest result from Lolibooru
-           Warning: Can and will display NSFW images"""
+        """Retrieves the latest result from Lolibooru"""
         server = ctx.message.server
         if len(text) > 0:
             msg = "+".join(text)
@@ -28,8 +27,7 @@ class Loli:
 
     @commands.command(pass_context=True,no_pm=True)
     async def lolir(self, ctx, *text):
-        """Retrieves a random result from Lolibooru
-           Warning: Can and will display NSFW images"""
+        """Retrieves a random result from Lolibooru"""
         server = ctx.message.server
         if len(text) > 0:
             msg = "+".join(text)

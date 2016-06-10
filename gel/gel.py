@@ -17,8 +17,7 @@ class Gel:
 
     @commands.command(pass_context=True,no_pm=True)
     async def gel(self, ctx, *text):
-        """Retrieves the latest result from Gelbooru
-           Warning: Can and will display NSFW images"""
+        """Retrieves the latest result from Gelbooru"""
         server = ctx.message.server
         if len(text) > 0:
             msg = "+".join(text)
@@ -30,8 +29,7 @@ class Gel:
 
     @commands.command(pass_context=True,no_pm=True)
     async def gelr(self, ctx, *text):
-        """Retrieves a random result from Gelbooru
-           Warning: Can and will display NSFW images"""
+        """Retrieves a random result from Gelbooru"""
         server = ctx.message.server
         if len(text) > 0:
             msg = "+".join(text)

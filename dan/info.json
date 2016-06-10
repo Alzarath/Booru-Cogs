@@ -1,6 +1,6 @@
 {
     "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]dan [text...] to get the first result\nUsage: [p]danr [text...] to get a random result\n\nSearch http://danbooru.donmai.us/ for anime pictures.\n\nDisclaimer: This cog can and will display NSFW content.",
+    "DESCRIPTION" : "Usage: [p]dan [text...] to get the first result\nUsage: [p]danr [text...] to get a random result\n\nSearch http://danbooru.donmai.us/ for anime pictures.\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
     "DISABLED" : false,
     "NAME" : "Searches for and posts anime pictures"
 }
