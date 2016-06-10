@@ -61,7 +61,7 @@ class E621:
             return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
         self.filters[server.id].append(filtertag)
         fileIO("data/e621/filters.json","save",self.filters)
-        await self.bot.say("Filter '{}' added to the e621 filter list.".format(filtertag))
+        await self.bot.say("Filter '{}' added to the server's e621 filter list.".format(filtertag))
 
     @e621filter.command(name="del", pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_server=True)
@@ -89,7 +89,7 @@ class E621:
                 fileIO("data/e621/filters.json","save",self.filters)
                 await self.bot.say("Reverted the server to the default e621 filter list.")
             else:
-                await self.bot.say("Already using the default e621 filter list.")
+                await self.bot.say("Server is already using the default e621 filter list.")
 
     @e621filter.command(name="list", pass_context=True)
     async def _list_e621filter(self, ctx):
