@@ -115,7 +115,10 @@ async def fetch_image(self, ctx, randomize, search):
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
-            return website[0]["file_url"]
+            if "success" not in website:
+                return website[0]["file_url"]
+            else:
+                return "{} Keep in mind the filter list is not excluded from tag limits.".format(website["message"])
         else:
             return "Your search terms gave no results."
     except:
