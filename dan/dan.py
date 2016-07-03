@@ -54,7 +54,7 @@ class Dan:
             await send_cmd_help(ctx)
 
     @danfilter.command(name="add", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manager_server=True)
+    @checks.mod_or_permissions(manage_server=True)
     async def _add_danfilter(self, ctx, filtertag : str):
         """Adds a tag to the server's dan filter list
 
@@ -71,11 +71,11 @@ class Dan:
         await self.bot.say("Filter '{}' added to the server's dan filter list.".format(filtertag))
 
     @danfilter.command(name="del", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manager_server=True)
-    async def _del_danfilter(self, ctx, filtertag : str):
+    @checks.mod_or_permissions(manage_server=True)
+    async def _del_danfilter(self, ctx, filtertag : str=""):
         """Deletes a tag from the server's dan filter list
 
-           Without arguments, revers to the default dan filter list
+           Without arguments, reverts to the default dan filter list
 
            Example: !danfilter del rating:safe"""
         server = ctx.message.server
@@ -97,6 +97,16 @@ class Dan:
                 await self.bot.say("Reverted the server to the default dan filter list.")
             else:
                 await self.bot.say("Server is already using the default dan filter list.")
+
+    @danfilter.command(name="list", pass_context=True)
+    async def _list_danfilter(self, ctx):
+        """Lists all of the filters currently applied to the current server"""
+        server = ctx.message.server
+        if server.id in self.filters:
+            filterlist = '\n'.join(sorted(self.filters[server.id]))
+        else:
+            filterlist = '\n'.join(sorted(self.filters["default"]))
+        await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
 
 async def fetch_image(self, ctx, randomize, search):
     server = ctx.message.server
