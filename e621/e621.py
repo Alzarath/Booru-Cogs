@@ -6,7 +6,11 @@ from __main__ import send_cmd_help
 import os
 import aiohttp
 
-MAX_FILTER_TAGS = 50
+settings = {
+# Maximum filters per server before it starts restricting tags from being added to the filter list.
+# Does not represent the amount of tags a search permits.
+    "MAX_FILTER_TAGS" : 50
+}
 
 class E621:
     def __init__(self, bot):
@@ -57,11 +61,14 @@ class E621:
             self.filters[server.id] = self.filters["default"]
             fileIO("data/e621/filters.json","save",self.filters)
             self.filters = fileIO("data/e621/filters.json","load")
-        if len(self.filters[server.id]) > MAX_FILTER_TAGS:
+        if len(self.filters[server.id]) > settings["MAX_FILTER_TAGS"]:
             return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
-        self.filters[server.id].append(filtertag)
-        fileIO("data/e621/filters.json","save",self.filters)
-        await self.bot.say("Filter '{}' added to the server's e621 filter list.".format(filtertag))
+        if filtertag not in self.filters[server.id]:
+            self.filters[server.id].append(filtertag)
+            fileIO("data/e621/filters.json","save",self.filters)
+            await self.bot.say("Filter '{}' added to the server's e621 filter list.".format(filtertag))
+        else:
+            await self.bot.say("Filter '{}' is already in the server's e621 filter list.".format(filtertag))
 
     @e621filter.command(name="del", pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_server=True)

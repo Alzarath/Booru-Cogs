@@ -8,7 +8,11 @@ import aiohttp
 import random
 import xml
 
-MAX_FILTER_TAGS = 50
+settings = {
+# Maximum filters per server before it starts restricting tags from being added to the filter list.
+# Does not represent the amount of tags a search permits.
+    "MAX_FILTER_TAGS" : 50
+}
 
 class Gel:
     def __init__(self, bot):
@@ -59,11 +63,14 @@ class Gel:
             self.filters[server.id] = self.filters["default"]
             fileIO("data/gel/filters.json","save",self.filters)
             self.filters = fileIO("data/gel/filters.json","load")
-        if len(self.filters[server.id]) > MAX_FILTER_TAGS:
+        if len(self.filters[server.id]) > settings["MAX_FILTER_TAGS"]:
             return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
-        self.filters[server.id].append(filtertag)
-        fileIO("data/gel/filters.json","save",self.filters)
-        await self.bot.say("Filter '{}' added to the server's gel filter list.".format(filtertag))
+        if filtertag not in self.filters[server.id]:
+            self.filters[server.id].append(filtertag)
+            fileIO("data/gel/filters.json","save",self.filters)
+            await self.bot.say("Filter '{}' added to the server's gel filter list.".format(filtertag))
+        else:
+            await self.bot.say("Filter '{}' is already in the server's gel filter list.".format(filtertag))
 
     @gelfilter.command(name="del", pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_server=True)
