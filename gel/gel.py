@@ -3,6 +3,7 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
+from urllib.parse import quote
 import os
 import aiohttp
 import random
@@ -24,7 +25,7 @@ class Gel:
         """Retrieves the latest result from Gelbooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
+            msg = quote("+".join(text))
             search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
             url = await fetch_image(self, ctx, randomize=False, search=search)
             await self.bot.say(url)
@@ -36,7 +37,7 @@ class Gel:
         """Retrieves a random result from Gelbooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
+            msg = quote("+".join(text))
             search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
         else:
             search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags="

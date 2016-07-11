@@ -3,6 +3,7 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
+from urllib.parse import quote
 import os
 import aiohttp
 
@@ -22,7 +23,7 @@ class E621:
         """Retrieves the latest result from e621"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
+            msg = quote("+".join(text))
             search = "http://e621.net/post/index.json?limit=1&tags={}".format(msg)
             url = await fetch_image(self=self, ctx=ctx, randomize=False, search=search)
             await self.bot.say(url)
@@ -34,7 +35,7 @@ class E621:
         """Retrieves a random result from e621"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
+            msg = quote("+".join(text))
             search = "http://e621.net/post/index.json?limit=1&tags={}".format(msg)
         else:
             search = "http://e621.net/post/index.json?limit=1&tags="

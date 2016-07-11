@@ -4,6 +4,7 @@ from .utils.chat_formatting import *
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
+from urllib.parse import quote
 import aiohttp
 import os
 
@@ -18,7 +19,7 @@ class Pony:
         """Retrieves the latest result from Derpibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
+            msg = quote("+".join(text))
             search = "https://derpiboo.ru/search.json?q=" + msg
             url = await fetch_image(self, ctx, randomize=False, search=search)
             await self.bot.say(url)
@@ -30,7 +31,7 @@ class Pony:
         """Retrieves a random result from Derpibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
+            msg = quote("+".join(text))
             search = "https://derpiboo.ru/search.json?q=" + msg
         else:
             search = "https://derpiboo.ru/search.json?q=*"

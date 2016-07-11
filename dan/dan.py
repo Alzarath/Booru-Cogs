@@ -3,22 +3,12 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
+from urllib.parse import quote
 import os
 import aiohttp
 
-settings = {
-# Maximum image results. Capped at 100. Increasing probably isn't necessary.
-    "IMAGE_LIMIT" : 10,
-# Your Danbooru username. Sadly doesn't implement blacklists.
-    "USERNAME" : "",
-# Your Danbooru API Key. Used for basic, gold, and platinum features. Requires USERNAME.
-    "API_KEY" : "",
-# Maximum filters per server before it starts restricting tags from being added to the filter list.
-# Does not represent the amount of tags a search permits.
-    "MAX_FILTER_TAGS" : 50
-}
-
 class Dan:
+    # Danbooru is awful and it should feel awful
     def __init__(self, bot):
         self.bot = bot
         self.filters = fileIO("data/dan/filters.json","load")
@@ -28,8 +18,8 @@ class Dan:
         """Retrieves the latest result from Danbooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
-            search = "http://danbooru.donmai.us/posts.json?limit={}&tags={}".format(str(settings["IMAGE_LIMIT"]), msg)
+            msg = quote("+".join(text))
+            search = "http://danbooru.donmai.us/posts.json?tags={}".format(msg)
             url = await fetch_image(self, ctx, randomize=False, search=search)
             await self.bot.say(url)
         else:
@@ -40,10 +30,11 @@ class Dan:
         """Retrieves a random result from Danbooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = "+".join(text)
-            search = "http://danbooru.donmai.us/posts.json?limit={}&tags={}".format(str(settings["IMAGE_LIMIT"]), msg)
+            msg = quote("+".join(text))
+            search = "http://danbooru.donmai.us/posts.json?tags={}".format(msg)
+            print(search)
         else:
-            search = "http://danbooru.donmai.us/posts.json?limit={}".format(str(settings["IMAGE_LIMIT"]))
+            search = "http://danbooru.donmai.us/posts.json"
         url = await fetch_image(self, ctx, randomize=True, search=search)
         await self.bot.say(url)
 
@@ -67,7 +58,7 @@ class Dan:
             self.filters[server.id] = self.filters["default"]
             fileIO("data/dan/filters.json","save",self.filters)
             self.filters = fileIO("data/dan/filters.json","load")
-        if len(self.filters[server.id]) > settings["MAX_FILTER_TAGS"]:
+        if len(self.filters[server.id]) > self.settings["maxfilters"]:
             return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
         if filtertag not in self.filters[server.id]:
             self.filters[server.id].append(filtertag)
@@ -114,9 +105,49 @@ class Dan:
             filterlist = '\n'.join(sorted(self.filters["default"]))
         await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
 
+    @commands.group(pass_context=True)
+    async def danset(self, ctx):
+        """Manages dan options
+           Global only
+
+           Keep in mind that your information, while stored locally, is stored in plain text"""
+        if ctx.invoked_subcommand is None:
+            await send_cmd_help(ctx)
+
+    @danset.command(name="username")
+    async def _username_danset(self, username):
+        """Sets the username used for Danbooru
+
+           Useful to apply premium benefits to searches"""
+        self.settings = fileIO("data/dan/settings.json","load")
+        self.settings["username"] = username
+        fileIO("data/dan/settings.json","save",self.settings)
+        await self.bot.say("Username assigned to dan's settings.")
+
+    @danset.command(name="apikey")
+    async def _apikey_danset(self, api_key):
+        """Sets the API key used for Danbooru
+
+           Useful to apply premium benefits to searches"""
+        self.settings = fileIO("data/dan/settings.json","load")
+        self.settings["api_key"] = api_key
+        fileIO("data/dan/settings.json","save",self.settings)
+        await self.bot.say("API key assigned to dan's settings.")
+
+    @danset.command(name="maxfilters")
+    async def _maxfilters_danset(self, maxfilters:int):
+        """Sets the global tag limit for the filter list
+
+           Gives an error when a user tries to add a filter when the server's filter list contains a certain amount of tags"""
+        self.settings = fileIO("data/dan/settings.json","load")
+        self.settings["maxfilters"] = maxfilters
+        fileIO("data/dan/settings.json","save",self.settings)
+        await self.bot.say("Maximum filter list filters allowed per server for dan set to '{}'.".format(maxfilters))
+
 async def fetch_image(self, ctx, randomize, search):
     server = ctx.message.server
     self.filters = fileIO("data/dan/filters.json","load")
+    self.settings = fileIO("data/dan/settings.json","load")
 
     try:
         if server.id in self.filters:
@@ -125,8 +156,8 @@ async def fetch_image(self, ctx, randomize, search):
             search += "+{}".format("+".join(self.filters["default"]))
         if randomize == True:
             search += "&random=y"
-        if settings["USERNAME"] != "" and settings["API_KEY"] != "":
-            search += "&login={}&api_key={}".format(settings["USERNAME"], settings["API_KEY"])
+        if self.settings["username"] != "" and self.settings["api_key"] != "":
+            search += "&login={}&api_key={}".format(self.settings["username"], self.settings["api_key"])
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
@@ -149,6 +180,7 @@ def check_folder():
 
 def check_files():
     filters = {"default":["rating:safe"]}
+    settings = {"username":"","password":""}
 
     if not fileIO("data/dan/filters.json", "check"):
         print ("Creating default dan filters.json...")
@@ -159,17 +191,11 @@ def check_files():
             filterlist["default"] = filters["default"]
             print ("Adding default dan filters...")
             fileIO("data/dan/filters.json","save",filterlist)
-
-def check_info():
-    if settings["USERNAME"] != "":
-        if settings["API_KEY"] == "":
-            print("You must set API_KEY in cogs/dan.py for USERNAME to be relevant.")
-    if settings["API_KEY"] != "":
-        if settings["USERNAME"] == "":
-            print("You must set USERNAME in cogs/dan.py for API_KEY to be relevant.")
+    if not fileIO("data/dan/settings.json", "check"):
+        print ("Creating default dan settings.json...")
+        fileIO("data/dan/settings.json", "save", settings)
 
 def setup(bot):
     check_folder()
     check_files()
-    check_info()
     bot.add_cog(Dan(bot))
