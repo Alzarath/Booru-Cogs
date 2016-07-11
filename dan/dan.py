@@ -181,7 +181,7 @@ def check_folder():
 
 def check_files():
     filters = {"default":["rating:safe"]}
-    settings = {"username":"","password":""}
+    settings = {"username":"","api_key":"", "maxfilters":"10"}
 
     if not fileIO("data/dan/filters.json", "check"):
         print ("Creating default dan filters.json...")
