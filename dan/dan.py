@@ -32,9 +32,8 @@ class Dan:
         if len(text) > 0:
             msg = quote("+".join(text))
             search = "http://danbooru.donmai.us/posts.json?tags={}".format(msg)
-            print(search)
         else:
-            search = "http://danbooru.donmai.us/posts.json"
+            search = "http://danbooru.donmai.us/posts.json?tags="
         url = await fetch_image(self, ctx, randomize=True, search=search)
         await self.bot.say(url)
 
