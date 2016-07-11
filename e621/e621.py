@@ -52,7 +52,7 @@ class E621:
             await send_cmd_help(ctx)
 
     @e621filter.command(name="add", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _add_e621filter(self, ctx, filtertag : str):
         """Adds a tag to the server's e621 filter list
 
@@ -72,7 +72,7 @@ class E621:
             await self.bot.say("Filter '{}' is already in the server's e621 filter list.".format(filtertag))
 
     @e621filter.command(name="del", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _del_e621filter(self, ctx, filtertag : str=""):
         """Deletes a tag from the server's e621 filter list
 

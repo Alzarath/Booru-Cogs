@@ -54,7 +54,7 @@ class Gel:
             await send_cmd_help(ctx)
 
     @gelfilter.command(name="add", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _add_gelfilter(self, ctx, filtertag : str):
         """Adds a tag to the server's gel filter list
 
@@ -74,7 +74,7 @@ class Gel:
             await self.bot.say("Filter '{}' is already in the server's gel filter list.".format(filtertag))
 
     @gelfilter.command(name="del", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _del_gelfilter(self, ctx, filtertag : str=""):
         """Deletes a tag from the server's gel filter list
 

@@ -52,7 +52,7 @@ class Loli:
             await send_cmd_help(ctx)
 
     @lolifilter.command(name="add", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _add_lolifilter(self, ctx, filtertag : str):
         """Adds a tag to the server's loli filter list
 
@@ -72,7 +72,7 @@ class Loli:
             await self.bot.say("Filter '{}' is already in the server's loli filter list.".format(filtertag))
 
     @lolifilter.command(name="del", pass_context=True, no_pm=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _del_lolifilter(self, ctx, filtertag : str=""):
         """Deletes a tag from the server's loli filter list
 

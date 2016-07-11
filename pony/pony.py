@@ -78,7 +78,7 @@ class Pony:
         await self.bot.say("The global pony filter list contains:```\n" + filterlist + "```")
 
     @ponyfilter.command(name="set", pass_context=True)
-    @checks.mod_or_permissions(manage_server=True)
+    @checks.admin_or_permissions(manage_server=True)
     async def _set_ponyfilter(self, ctx, filtername : str="default"):
         """Sets the filter for the current server
            Warning: Some filters may display NSFW images
