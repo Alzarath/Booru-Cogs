@@ -20,6 +20,15 @@ Fetches anime-related images from https://danbooru.donmai.us/
 #### Commands
 - `[p]dan [tags...]` fetches the latest image with the entered tags  
 - `[p]danr [tags...]` fetches a random image, optionally with the entered tags  
+- `[p]danfilter [option]` is used to adjust filter options  
+    - `list` display all the tags from the current server's filter list  
+    - `add [tag]`¹ adds a tag to the current server's filter list  
+    - `del [tag]`¹ deletes a tag from the current server's filter list
+    - `del`¹ deletes the current server's filter list, making them use the default
+- `[p]danset [option]` is used to adjust cog settings  
+    - `username [username]`² sets the username used to access the booru  
+    - `apikey [API key]`² sets the API key used to access the booru  
+    - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter list per server
 
 ### e621
 Fetches furry-related images from https://e621.net/
