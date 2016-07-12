@@ -3,7 +3,7 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
-from urllib.parse import quote
+from urllib import parse
 import os
 import aiohttp
 
@@ -16,11 +16,8 @@ class Dan:
     @commands.command(pass_context=True,no_pm=True)
     async def dan(self, ctx, *text):
         """Retrieves the latest result from Danbooru"""
-        server = ctx.message.server
         if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "http://danbooru.donmai.us/posts.json?tags={}".format(msg)
-            url = await fetch_image(self, ctx, randomize=False, search=search)
+            url = await fetch_image(self, ctx, randomize=False, tags=text)
             await self.bot.say(url)
         else:
             await send_cmd_help(ctx)
@@ -28,13 +25,7 @@ class Dan:
     @commands.command(pass_context=True,no_pm=True)
     async def danr(self, ctx, *text):
         """Retrieves a random result from Danbooru"""
-        server = ctx.message.server
-        if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "http://danbooru.donmai.us/posts.json?tags={}".format(msg)
-        else:
-            search = "http://danbooru.donmai.us/posts.json?tags="
-        url = await fetch_image(self, ctx, randomize=True, search=search)
+        url = await fetch_image(self, ctx, randomize=True, tags=text)
         await self.bot.say(url)
 
     @commands.group(pass_context=True)
@@ -144,20 +135,27 @@ class Dan:
         fileIO("data/dan/settings.json","save",self.settings)
         await self.bot.say("Maximum filter list filters allowed per server for dan set to '{}'.".format(maxfilters))
 
-async def fetch_image(self, ctx, randomize, search):
+async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/dan/filters.json","load")
     self.settings = fileIO("data/dan/settings.json","load")
+    search = "http://danbooru.donmai.us/posts.json?tags="
+
+    tagSearch = ""
 
     try:
+        if tags:
+            tagSearch += "{} ".format(" ".join(tags))
         if server.id in self.filters:
-            search += "+{}".format("+".join(self.filters[server.id]))
+            tagSearch += " ".join(self.filters[server.id])
         else:
-            search += "+{}".format("+".join(self.filters["default"]))
+            tagSearch += " ".join(self.filters["default"])
+        search += parse.quote_plus(tagSearch)
         if randomize == True:
             search += "&random=y"
         if self.settings["username"] != "" and self.settings["api_key"] != "":
             search += "&login={}&api_key={}".format(self.settings["username"], self.settings["api_key"])
+        print(search)
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
