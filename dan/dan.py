@@ -155,7 +155,6 @@ async def fetch_image(self, ctx, randomize, tags):
             search += "&random=y"
         if self.settings["username"] != "" and self.settings["api_key"] != "":
             search += "&login={}&api_key={}".format(self.settings["username"], self.settings["api_key"])
-        print(search)
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
