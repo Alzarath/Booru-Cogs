@@ -4,7 +4,7 @@ from .utils.chat_formatting import *
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
-from urllib.parse import quote
+from urllib import parse
 import aiohttp
 import os
 
@@ -19,9 +19,7 @@ class Pony:
         """Retrieves the latest result from Derpibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "https://derpiboo.ru/search.json?q=" + msg
-            url = await fetch_image(self, ctx, randomize=False, search=search)
+            url = await fetch_image(self, ctx, randomize=False, tags=text)
             await self.bot.say(url)
         else:   
             await send_cmd_help(ctx)
@@ -30,12 +28,7 @@ class Pony:
     async def ponyr(self, ctx, *text):
         """Retrieves a random result from Derpibooru"""
         server = ctx.message.server
-        if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "https://derpiboo.ru/search.json?q=" + msg
-        else:
-            search = "https://derpiboo.ru/search.json?q=*"
-        url = await fetch_image(self, ctx, randomize=True, search=search)
+        url = await fetch_image(self, ctx, randomize=True, tags=text)
         await self.bot.say(url)
 
     @commands.group(pass_context = True)
@@ -94,16 +87,22 @@ class Pony:
         else:
             await self.bot.say("'{}' does not exist in the filter list.".format(filtername))
 
-async def fetch_image(self, ctx, randomize, search):
+async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.availablefilters = fileIO("data/pony/availablefilters.json", "load")
     self.activefilters = fileIO("data/pony/activefilters.json", "load")
 
-    if server.id in self.activefilters:
-        search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
-    else:
-        search += "&filter_id=" + self.availablefilters["default"]
+    search = "https://derpiboo.ru/search.json?q="
+    tagSearch = ""
+
     try:
+        if tags:
+            tagSearch += "{} ".format(" ".join(tags))
+        search += parse.quote_plus(tagSearch)
+        if server.id in self.activefilters:
+            search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
+        else:
+            search += "&filter_id=" + self.availablefilters["default"]
         if randomize == True:
             search += "&random_image=y"
         async with aiohttp.get(search) as r:
