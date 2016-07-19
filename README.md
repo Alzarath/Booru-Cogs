@@ -41,6 +41,8 @@ Fetches furry-related images from https://e621.net/
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
     - `del`¹ deletes the current server's filter list, making them use the default
+- `[p]e621set [option]` is used to adjust cog settings  
+    - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter list per server
 
 ### Gel
 Fetches anime-related images from https://gelbooru.com/
@@ -53,6 +55,8 @@ Fetches anime-related images from https://gelbooru.com/
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
     - `del`¹ deletes the current server's filter list, making them use the default
+- `[p]gelset [option]` is used to adjust cog settings  
+    - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter list per server
 
 ### Loli
 Fetches loli-related images from https://lolibooru.moe/
@@ -65,6 +69,8 @@ Fetches loli-related images from https://lolibooru.moe/
     - `add [tag]`¹ adds a tag to the current server's filter list  
     - `del [tag]`¹ deletes a tag from the current server's filter list
     - `del`¹ deletes the current server's filter list, making them use the default
+- `[p]loliset [option]` is used to adjust cog settings  
+    - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter list per server
 
 ### Pony
 Fetches pony-related images from http://derpiboo.ru/

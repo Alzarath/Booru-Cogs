@@ -16,7 +16,8 @@ settings = {
 class E621:
     def __init__(self, bot):
         self.bot = bot
-        self.filters = fileIO("data/e621/filters.json","load")
+        self.filters = fileIO("data/e621/filters.json", "load")
+        self.settings = fileIO("data/e621/settings.json", "load")
 
     @commands.command(pass_context=True, no_pm=True)
     async def e621(self, ctx, *text):
@@ -51,16 +52,17 @@ class E621:
         server = ctx.message.server
         if server.id not in self.filters:
             self.filters[server.id] = self.filters["default"]
-            fileIO("data/e621/filters.json","save",self.filters)
-            self.filters = fileIO("data/e621/filters.json","load")
-        if len(self.filters[server.id]) > settings["MAX_FILTER_TAGS"]:
-            return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
-        if filtertag not in self.filters[server.id]:
-            self.filters[server.id].append(filtertag)
-            fileIO("data/e621/filters.json","save",self.filters)
-            await self.bot.say("Filter '{}' added to the server's e621 filter list.".format(filtertag))
+            fileIO("data/e621/filters.json", "save", self.filters)
+            self.filters = fileIO("data/e621/filters.json", "load")
+        if len(self.filters[server.id]) < int(self.settings["maxfilters"]):
+            if filtertag not in self.filters[server.id]:
+                self.filters[server.id].append(filtertag)
+                fileIO("data/e621/filters.json", "save", self.filters)
+                await self.bot.say("Filter '{}' added to the server's e621 filter list.".format(filtertag))
+            else:
+                await self.bot.say("Filter '{}' is already in the server's e621 filter list.".format(filtertag))
         else:
-            await self.bot.say("Filter '{}' is already in the server's e621 filter list.".format(filtertag))
+            await self.bot.say("This server has exceeded the maximum filters ({}/{}). https://www.youtube.com/watch?v=1MelZ7xaacs".format(len(self.filters[server.id]), self.settings["maxfilters"]))
 
     @e621filter.command(name="del", pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_server=True)
@@ -74,18 +76,18 @@ class E621:
         if len(filtertag) > 0:
             if server.id not in self.filters:
                 self.filters[server.id] = self.filters["default"]
-                fileIO("data/e621/filters.json","save",self.filters)
-                self.filters = fileIO("data/e621/filters.json","load")
+                fileIO("data/e621/filters.json", "save", self.filters)
+                self.filters = fileIO("data/e621/filters.json", "load")
             if filtertag in self.filters[server.id]:
                 self.filters[server.id].remove(filtertag)
-                fileIO("data/e621/filters.json","save",self.filters)
+                fileIO("data/e621/filters.json", "save", self.filters)
                 await self.bot.say("Filter '{}' deleted from the server's e621 filter list.".format(filtertag))
             else:
                 await self.bot.say("Filter '{}' does not exist in the server's e621 filter list.".format(filtertag))
         else:
             if server.id in self.filters:
                 del self.filters[server.id]
-                fileIO("data/e621/filters.json","save",self.filters)
+                fileIO("data/e621/filters.json", "save", self.filters)
                 await self.bot.say("Reverted the server to the default e621 filter list.")
             else:
                 await self.bot.say("Server is already using the default e621 filter list.")
@@ -100,11 +102,27 @@ class E621:
             filterlist = '\n'.join(sorted(self.filters["default"]))
         await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
 
+    @commands.group(pass_context=True)
+    @checks.is_owner()
+    async def e621set(self, ctx):
+        """Manages e621 settings"""
+        if ctx.invoked_subcommand is None:
+            await send_cmd_help(ctx)
+
+    @e621set.command(name="maxfilters")
+    async def _maxfilters_e621set(self, maxfilters):
+        """Sets the global tag limit for the filter list
+
+           Gives an error when a user tries to add a filter while the server's filter list contains a certain amount of tags"""
+        self.settings["maxfilters"] = maxfilters
+        fileIO("data/e621/settings.json", "save", self.settings)
+        await self.bot.say("Maximum filters allowed per server for e621 set to '{}'.".format(maxfilters))
+
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
-    self.filters = fileIO("data/e621/filters.json","load")
-    search = "http://e621.net/post/index.json?limit=1&tags="
+    self.filters = fileIO("data/e621/filters.json", "load")
 
+    search = "http://e621.net/post/index.json?limit=1&tags="
     tagSearch = ""
 
     try:
@@ -131,21 +149,25 @@ async def fetch_image(self, ctx, randomize, tags):
 
 def check_folder():
     if not os.path.exists("data/e621"):
-        print ("Creating data/e621 folder...")
+        print("Creating data/e621 folder...")
         os.makedirs("data/e621")
 
 def check_files():
     filters = {"default":["rating:safe", "-grimdark", "-suggestive"]}
+    settings = {"maxfilters":"50"}
 
     if not fileIO("data/e621/filters.json", "check"):
-        print ("Creating default e621 filters.json...")
+        print("Creating default e621 filters.json...")
         fileIO("data/e621/filters.json", "save", filters)
     else:
-        filterlist = fileIO("data/e621/filters.json","load")
+        filterlist = fileIO("data/e621/filters.json", "load")
         if "default" not in filterlist:
             filterlist["default"] = filters["default"]
-            print ("Adding default e621 filters...")
-            fileIO("data/e621/filters.json","save",filterlist)
+            print("Adding default e621 filters...")
+            fileIO("data/e621/filters.json", "save", filterlist)
+    if not fileIO("data/e621/settings.json", "check"):
+        print("Creating default e621 settings.json...")
+        fileIO("data/e621/settings.json", "save", settings)
 
 def setup(bot):
     check_folder()

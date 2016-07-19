@@ -11,8 +11,8 @@ import os
 class Pony:
     def __init__(self, bot):
         self.bot = bot
-        self.availablefilters = fileIO("data/pony/availablefilters.json","load")
-        self.activefilters = fileIO("data/pony/activefilters.json","load")
+        self.availablefilters = fileIO("data/pony/availablefilters.json", "load")
+        self.activefilters = fileIO("data/pony/activefilters.json", "load")
 
     @commands.command(pass_context=True,no_pm=True)
     async def pony(self, ctx, *text):
@@ -55,7 +55,7 @@ class Pony:
 
            Example: !ponyfilter add legacy 37431"""
         self.availablefilters[filtername] = filterid
-        fileIO("data/pony/availablefilters.json","save",self.availablefilters)
+        fileIO("data/pony/availablefilters.json", "save", self.availablefilters)
         await self.bot.say("Filter '{}' added to the global pony filter list.".format(filtername))
 
     @ponyfilter.command(name="del")
@@ -67,7 +67,7 @@ class Pony:
         for i in self.availablefilters:
             if self.availablefilters[i] == self.availablefilters[filtername]:
                 self.availablefilters.pop(i)
-                fileIO("data/pony/availablefilters.json","save",self.availablefilters)
+                fileIO("data/pony/availablefilters.json", "save", self.availablefilters)
                 await self.bot.say("Filter '{}' deleted from the global pony filter list.".format(filtername))
                 break
 
@@ -89,15 +89,15 @@ class Pony:
         server = ctx.message.server
         if filtername in self.availablefilters:
             self.activefilters[server.id] = filtername
-            fileIO("data/pony/activefilters.json","save",self.activefilters)
+            fileIO("data/pony/activefilters.json", "save", self.activefilters)
             await self.bot.say("Filter set to '{}'.".format(filtername))
         else:
             await self.bot.say("'{}' does not exist in the filter list.".format(filtername))
 
 async def fetch_image(self, ctx, randomize, search):
     server = ctx.message.server
-    self.availablefilters = fileIO("data/pony/availablefilters.json","load")
-    self.activefilters = fileIO("data/pony/activefilters.json","load")
+    self.availablefilters = fileIO("data/pony/availablefilters.json", "load")
+    self.activefilters = fileIO("data/pony/activefilters.json", "load")
 
     if server.id in self.activefilters:
         search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
@@ -130,15 +130,15 @@ def check_folder():
         os.makedirs("data/pony")
 
 def check_files():
-    availablefilters = {"default":"100073","everything":"56027","dark":"37429","r34":"37432"}
+    availablefilters = {"default":"100073", "everything":"56027", "dark":"37429", "r34":"37432"}
     activefilters = {}
 
     if not fileIO("data/pony/availablefilters.json", "check"):
-        print ("Creating default pony's availablefilters.json...")
+        print("Creating default pony's availablefilters.json...")
         fileIO("data/pony/availablefilters.json", "save", availablefilters)
 
     if not fileIO("data/pony/activefilters.json", "check"):
-        print ("Creating default pony's activefilters.json...")
+        print("Creating default pony's activefilters.json...")
         fileIO("data/pony/activefilters.json", "save", activefilters)
 
 def setup(bot):

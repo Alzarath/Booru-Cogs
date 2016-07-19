@@ -10,8 +10,8 @@ import aiohttp
 class Loli:
     def __init__(self, bot):
         self.bot = bot
-        self.filters = fileIO("data/loli/filters.json","load")
-        self.settings = fileIO("data/loli/settings.json","load")
+        self.filters = fileIO("data/loli/filters.json", "load")
+        self.settings = fileIO("data/loli/settings.json", "load")
 
     @commands.command(pass_context=True,no_pm=True)
     async def loli(self, ctx, *text):
@@ -48,12 +48,12 @@ class Loli:
         server = ctx.message.server
         if server.id not in self.filters:
             self.filters[server.id] = self.filters["default"]
-            fileIO("data/loli/filters.json","save",self.filters)
-            self.filters = fileIO("data/loli/filters.json","load")
+            fileIO("data/loli/filters.json", "save", self.filters)
+            self.filters = fileIO("data/loli/filters.json", "load")
         if len(self.filters[server.id]) < int(self.settings["maxfilters"]):
             if filtertag not in self.filters[server.id]:
                 self.filters[server.id].append(filtertag)
-                fileIO("data/loli/filters.json","save",self.filters)
+                fileIO("data/loli/filters.json", "save", self.filters)
                 await self.bot.say("Filter '{}' added to the server's loli filter list.".format(filtertag))
             else:
                 await self.bot.say("Filter '{}' is already in the server's loli filter list.".format(filtertag))
@@ -72,18 +72,18 @@ class Loli:
         if len(filtertag) > 0:
             if server.id not in self.filters:
                 self.filters[server.id] = self.filters["default"]
-                fileIO("data/loli/filters.json","save",self.filters)
-                self.filters = fileIO("data/loli/filters.json","load")
+                fileIO("data/loli/filters.json", "save", self.filters)
+                self.filters = fileIO("data/loli/filters.json", "load")
             if filtertag in self.filters[server.id]:
                 self.filters[server.id].remove(filtertag)
-                fileIO("data/loli/filters.json","save",self.filters)
+                fileIO("data/loli/filters.json", "save", self.filters)
                 await self.bot.say("Filter '{}' deleted from the server's loli filter list.".format(filtertag))
             else:
                 await self.bot.say("Filter '{}' does not exist in the server's loli filter list.".format(filtertag))
         else:
             if server.id in self.filters:
                 del self.filters[server.id]
-                fileIO("data/loli/filters.json","save",self.filters)
+                fileIO("data/loli/filters.json", "save", self.filters)
                 await self.bot.say("Reverted the server to the default loli filter list.")
             else:
                 await self.bot.say("Server is already using the default loli filter list.")
@@ -109,17 +109,14 @@ class Loli:
     async def _maxfilters_loliset(self, maxfilters):
         """Sets the global tag limit for the filter list
 
-           Gives an error when a user tries to add a filter when the server's filter list contains a certain amount of tags"""
-        self.settings = fileIO("data/loli/settings.json","load")
+           Gives an error when a user tries to add a filter while the server's filter list contains a certain amount of tags"""
         self.settings["maxfilters"] = maxfilters
-        fileIO("data/loli/settings.json","save",self.settings)
+        fileIO("data/loli/settings.json", "save", self.settings)
         await self.bot.say("Maximum filters allowed per server for loli set to '{}'.".format(maxfilters))
-
 
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/loli/filters.json", "load")
-    self.settings = fileIO("data/loli/settings.json", "load")
     
     search = "https://lolibooru.moe/post/index.json?limit=1&tags="
     tagSearch = ""
@@ -154,16 +151,16 @@ def check_files():
     settings = {"maxfilters":"50"}
 
     if not fileIO("data/loli/filters.json", "check"):
-        print ("Creating default loli filters.json...")
+        print("Creating default loli filters.json...")
         fileIO("data/loli/filters.json", "save", filters)
     else:
         filterlist = fileIO("data/loli/filters.json", "load")
         if "default" not in filterlist:
             filterlist["default"] = filters["default"]
-            print ("Adding default loli filters...")
+            print("Adding default loli filters...")
             fileIO("data/loli/filters.json", "save", filterlist)
     if not fileIO("data/loli/settings.json", "check"):
-        print ("Creating default loli settings.json...")
+        print("Creating default loli settings.json...")
         fileIO("data/loli/settings.json", "save", settings)
 
 def setup(bot):
