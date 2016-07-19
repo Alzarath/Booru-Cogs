@@ -3,7 +3,7 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
-from urllib.parse import quote
+from urllib import parse
 import os
 import aiohttp
 import random
@@ -25,9 +25,7 @@ class Gel:
         """Retrieves the latest result from Gelbooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
-            url = await fetch_image(self, ctx, randomize=False, search=search)
+            url = await fetch_image(self, ctx, randomize=False, tags=text)
             await self.bot.say(url)
         else:
             await send_cmd_help(ctx)
@@ -36,12 +34,7 @@ class Gel:
     async def gelr(self, ctx, *text):
         """Retrieves a random result from Gelbooru"""
         server = ctx.message.server
-        if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags=" + msg
-        else:
-            search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags="
-        url = await fetch_image(self, ctx, randomize=True, search=search)
+        url = await fetch_image(self, ctx, randomize=True, tags=text)
         await self.bot.say(url)
 
     @commands.group(pass_context=True)
@@ -111,15 +104,21 @@ class Gel:
             filterlist = '\n'.join(sorted(self.filters["default"]))
         await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
 
-async def fetch_image(self, ctx, randomize, search):
+async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/gel/filters.json","load")
+    search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags="
+
+    tagSearch = ""
 
     try:
+        if tags:
+            tagSearch += "{} ".format(" ".join(tags))
         if server.id in self.filters:
-            search += "+{}".format("+".join(self.filters[server.id]))
+            tagSearch += " ".join(self.filters[server.id])
         else:
-            search += "+{}".format("+".join(self.filters["default"]))
+            tagSearch += " ".join(self.filters["default"])
+        search += parse.quote_plus(tagSearch)
         async with aiohttp.get(search) as r:
             website = await r.text()
         attr = website.split('"')[1::2]

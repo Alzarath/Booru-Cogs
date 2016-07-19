@@ -12,6 +12,7 @@ class Dan:
     def __init__(self, bot):
         self.bot = bot
         self.filters = fileIO("data/dan/filters.json","load")
+        self.settings = fileIO("data/dan/settings.json","load")
 
     @commands.command(pass_context=True,no_pm=True)
     async def dan(self, ctx, *text):
@@ -48,14 +49,15 @@ class Dan:
             self.filters[server.id] = self.filters["default"]
             fileIO("data/dan/filters.json","save",self.filters)
             self.filters = fileIO("data/dan/filters.json","load")
-        if len(self.filters[server.id]) > self.settings["maxfilters"]:
-            return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
-        if filtertag not in self.filters[server.id]:
-            self.filters[server.id].append(filtertag)
-            fileIO("data/dan/filters.json","save",self.filters)
-            await self.bot.say("Filter '{}' added to the server's dan filter list.".format(filtertag))
+        if len(self.filters[server.id]) < int(self.settings["maxfilters"]):
+            if filtertag not in self.filters[server.id]:
+                self.filters[server.id].append(filtertag)
+                fileIO("data/dan/filters.json","save",self.filters)
+                await self.bot.say("Filter '{}' added to the server's dan filter list.".format(filtertag))
+            else:
+                await self.bot.say("Filter '{}' is already in the server's dan filter list.".format(filtertag))
         else:
-            await self.bot.say("Filter '{}' is already in the server's dan filter list.".format(filtertag))
+            await self.bot.say("This server has exceeded the maximum filters ({}/{}). https://www.youtube.com/watch?v=1MelZ7xaacs".format(len(self.filters[server.id]), self.settings["maxfilters"]))
 
     @danfilter.command(name="del", pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_server=True)
@@ -110,7 +112,6 @@ class Dan:
         """Sets the username used for Danbooru
 
            Useful to apply premium benefits to searches"""
-        self.settings = fileIO("data/dan/settings.json","load")
         self.settings["username"] = username
         fileIO("data/dan/settings.json","save",self.settings)
         await self.bot.say("Username assigned to dan's settings.")
@@ -120,27 +121,26 @@ class Dan:
         """Sets the API key used for Danbooru
 
            Useful to apply premium benefits to searches"""
-        self.settings = fileIO("data/dan/settings.json","load")
         self.settings["api_key"] = api_key
         fileIO("data/dan/settings.json","save",self.settings)
         await self.bot.say("API key assigned to dan's settings.")
 
     @danset.command(name="maxfilters")
-    async def _maxfilters_danset(self, maxfilters:int):
+    async def _maxfilters_danset(self, maxfilters):
         """Sets the global tag limit for the filter list
 
            Gives an error when a user tries to add a filter when the server's filter list contains a certain amount of tags"""
         self.settings = fileIO("data/dan/settings.json","load")
         self.settings["maxfilters"] = maxfilters
         fileIO("data/dan/settings.json","save",self.settings)
-        await self.bot.say("Maximum filter list filters allowed per server for dan set to '{}'.".format(maxfilters))
+        await self.bot.say("Maximum filters allowed per server for dan set to '{}'.".format(maxfilters))
 
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
-    self.filters = fileIO("data/dan/filters.json","load")
-    self.settings = fileIO("data/dan/settings.json","load")
-    search = "http://danbooru.donmai.us/posts.json?tags="
+    self.filters = fileIO("data/dan/filters.json", "load")
+    self.settings = fileIO("data/dan/settings.json", "load")
 
+    search = "http://danbooru.donmai.us/posts.json?tags="
     tagSearch = ""
 
     try:
@@ -177,17 +177,17 @@ def check_folder():
 
 def check_files():
     filters = {"default":["rating:safe"]}
-    settings = {"username":"","api_key":"", "maxfilters":"10"}
+    settings = {"username":"", "api_key":"", "maxfilters":"10"}
 
     if not fileIO("data/dan/filters.json", "check"):
         print ("Creating default dan filters.json...")
         fileIO("data/dan/filters.json", "save", filters)
     else:
-        filterlist = fileIO("data/dan/filters.json","load")
+        filterlist = fileIO("data/dan/filters.json", "load")
         if "default" not in filterlist:
             filterlist["default"] = filters["default"]
             print ("Adding default dan filters...")
-            fileIO("data/dan/filters.json","save",filterlist)
+            fileIO("data/dan/filters.json", "save", filterlist)
     if not fileIO("data/dan/settings.json", "check"):
         print ("Creating default dan settings.json...")
         fileIO("data/dan/settings.json", "save", settings)

@@ -3,7 +3,7 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
-from urllib.parse import quote
+from urllib import parse
 import os
 import aiohttp
 
@@ -21,11 +21,8 @@ class E621:
     @commands.command(pass_context=True, no_pm=True)
     async def e621(self, ctx, *text):
         """Retrieves the latest result from e621"""
-        server = ctx.message.server
         if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "http://e621.net/post/index.json?limit=1&tags={}".format(msg)
-            url = await fetch_image(self=self, ctx=ctx, randomize=False, search=search)
+            url = await fetch_image(self=self, ctx=ctx, randomize=False, tags=text)
             await self.bot.say(url)
         else:
             await send_cmd_help(ctx)
@@ -33,13 +30,7 @@ class E621:
     @commands.command(pass_context=True, no_pm=True)
     async def e621r(self, ctx, *text):
         """Retrieves a random result from e621"""
-        server = ctx.message.server
-        if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "http://e621.net/post/index.json?limit=1&tags={}".format(msg)
-        else:
-            search = "http://e621.net/post/index.json?limit=1&tags="
-        url = await fetch_image(self=self, ctx=ctx, randomize=True, search=search)
+        url = await fetch_image(self=self, ctx=ctx, randomize=True, tags=text)
         await self.bot.say(url)
 
     @commands.group(pass_context=True)
@@ -109,15 +100,21 @@ class E621:
             filterlist = '\n'.join(sorted(self.filters["default"]))
         await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
 
-async def fetch_image(self, ctx, randomize, search):
+async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/e621/filters.json","load")
+    search = "http://e621.net/post/index.json?limit=1&tags="
+
+    tagSearch = ""
 
     try:
+        if tags:
+            tagSearch += "{} ".format(" ".join(tags))
         if server.id in self.filters:
-            search += "+{}".format("+".join(self.filters[server.id]))
+            tagSearch += " ".join(self.filters[server.id])
         else:
-            search += "+{}".format("+".join(self.filters["default"]))
+            tagSearch += " ".join(self.filters["default"])
+        search += parse.quote_plus(tagSearch)
         if randomize == True:
             search += "+order:random"
         async with aiohttp.get(search) as r:

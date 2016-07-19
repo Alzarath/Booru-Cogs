@@ -3,29 +3,22 @@ from discord.ext import commands
 from .utils.dataIO import fileIO
 from .utils import checks
 from __main__ import send_cmd_help
-from urllib.parse import quote
+from urllib import parse
 import os
 import aiohttp
-
-settings = {
-# Maximum filters per server before it starts restricting tags from being added to the filter list.
-# Does not represent the amount of tags a search permits.
-    "MAX_FILTER_TAGS" : 50
-}
 
 class Loli:
     def __init__(self, bot):
         self.bot = bot
         self.filters = fileIO("data/loli/filters.json","load")
+        self.settings = fileIO("data/loli/settings.json","load")
 
     @commands.command(pass_context=True,no_pm=True)
     async def loli(self, ctx, *text):
         """Retrieves the latest result from Lolibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "https://lolibooru.moe/post/index.json?limit=1&tags={}".format(msg)
-            url = await fetch_image(self, ctx, randomize=False, search=search)
+            url = await fetch_image(self, ctx, randomize=False, tags=text)
             await self.bot.say(url)
         else:
             await send_cmd_help(ctx)
@@ -34,12 +27,7 @@ class Loli:
     async def lolir(self, ctx, *text):
         """Retrieves a random result from Lolibooru"""
         server = ctx.message.server
-        if len(text) > 0:
-            msg = quote("+".join(text))
-            search = "https://lolibooru.moe/post/index.json?limit=1&tags={}".format(msg)
-        else:
-            search = "https://lolibooru.moe/post/index.json?limit=1&tags="
-        url = await fetch_image(self, ctx, randomize=True, search=search)
+        url = await fetch_image(self, ctx, randomize=True, tags=text)
         await self.bot.say(url)
 
     @commands.group(pass_context=True)
@@ -62,14 +50,15 @@ class Loli:
             self.filters[server.id] = self.filters["default"]
             fileIO("data/loli/filters.json","save",self.filters)
             self.filters = fileIO("data/loli/filters.json","load")
-        if len(self.filters[server.id]) > settings["MAX_FILTER_TAGS"]:
-            return await self.bot.say("Too many tags. https://www.youtube.com/watch?v=1MelZ7xaacs")
-        if filtertag not in self.filters[server.id]:
-            self.filters[server.id].append(filtertag)
-            fileIO("data/loli/filters.json","save",self.filters)
-            await self.bot.say("Filter '{}' added to the server's loli filter list.".format(filtertag))
+        if len(self.filters[server.id]) < int(self.settings["maxfilters"]):
+            if filtertag not in self.filters[server.id]:
+                self.filters[server.id].append(filtertag)
+                fileIO("data/loli/filters.json","save",self.filters)
+                await self.bot.say("Filter '{}' added to the server's loli filter list.".format(filtertag))
+            else:
+                await self.bot.say("Filter '{}' is already in the server's loli filter list.".format(filtertag))
         else:
-            await self.bot.say("Filter '{}' is already in the server's loli filter list.".format(filtertag))
+            await self.bot.say("This server has exceeded the maximum filters ({}/{}). https://www.youtube.com/watch?v=1MelZ7xaacs".format(len(self.filters[server.id]), self.settings["maxfilters"]))
 
     @lolifilter.command(name="del", pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_server=True)
@@ -109,15 +98,40 @@ class Loli:
             filterlist = '\n'.join(sorted(self.filters["default"]))
         await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
 
-async def fetch_image(self, ctx, randomize, search):
+    @commands.group(pass_context=True)
+    @checks.is_owner()
+    async def loliset(self, ctx):
+        """Manages loli options"""
+        if ctx.invoked_subcommand is None:
+            await send_cmd_help(ctx)
+
+    @loliset.command(name="maxfilters")
+    async def _maxfilters_loliset(self, maxfilters):
+        """Sets the global tag limit for the filter list
+
+           Gives an error when a user tries to add a filter when the server's filter list contains a certain amount of tags"""
+        self.settings = fileIO("data/loli/settings.json","load")
+        self.settings["maxfilters"] = maxfilters
+        fileIO("data/loli/settings.json","save",self.settings)
+        await self.bot.say("Maximum filters allowed per server for loli set to '{}'.".format(maxfilters))
+
+
+async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
-    self.filters = fileIO("data/loli/filters.json","load")
+    self.filters = fileIO("data/loli/filters.json", "load")
+    self.settings = fileIO("data/loli/settings.json", "load")
+    
+    search = "https://lolibooru.moe/post/index.json?limit=1&tags="
+    tagSearch = ""
 
     try:
+        if tags:
+            tagSearch += "{} ".format(" ".join(tags))
         if server.id in self.filters:
-            search += "+{}".format("+".join(self.filters[server.id]))
+            tagSearch += " ".join(self.filters[server.id])
         else:
-            search += "+{}".format("+".join(self.filters["default"]))
+            tagSearch += " ".join(self.filters["default"])
+        search += parse.quote_plus(tagSearch)
         if randomize == True:
             search += "+order:random"
         async with aiohttp.get(search) as r:
@@ -137,16 +151,20 @@ def check_folder():
 
 def check_files():
     filters = {"default":["rating:safe"]}
+    settings = {"maxfilters":"50"}
 
     if not fileIO("data/loli/filters.json", "check"):
         print ("Creating default loli filters.json...")
         fileIO("data/loli/filters.json", "save", filters)
     else:
-        filterlist = fileIO("data/loli/filters.json","load")
+        filterlist = fileIO("data/loli/filters.json", "load")
         if "default" not in filterlist:
             filterlist["default"] = filters["default"]
             print ("Adding default loli filters...")
-            fileIO("data/loli/filters.json","save",filterlist)
+            fileIO("data/loli/filters.json", "save", filterlist)
+    if not fileIO("data/loli/settings.json", "check"):
+        print ("Creating default loli settings.json...")
+        fileIO("data/loli/settings.json", "save", settings)
 
 def setup(bot):
     check_folder()
