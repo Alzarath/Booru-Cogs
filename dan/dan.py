@@ -108,22 +108,34 @@ class Dan:
             await send_cmd_help(ctx)
 
     @danset.command(name="username")
-    async def _username_danset(self, username):
+    async def _username_danset(self, username:str=""):
         """Sets the username used for Danbooru
 
            Useful to apply premium benefits to searches"""
         self.settings["username"] = username
+        if username != "":
+            msg = "Username assigned to dan's settings."
+            if self.settings["api_key"] == "":
+                msg += " Don't forget to add the API key."
+        else:
+            msg = "Username cleared."
         fileIO("data/dan/settings.json","save",self.settings)
-        await self.bot.say("Username assigned to dan's settings.")
+        await self.bot.say(msg)
 
     @danset.command(name="apikey")
-    async def _apikey_danset(self, api_key):
+    async def _apikey_danset(self, api_key:str=""):
         """Sets the API key used for Danbooru
 
            Useful to apply premium benefits to searches"""
         self.settings["api_key"] = api_key
+        if api_key != "":
+            msg = "API key assigned to dan's settings."
+            if self.settings["username"] == "":
+                msg += " Don't forget to add the username."
+        else:
+            msg = "API key cleared."
         fileIO("data/dan/settings.json","save",self.settings)
-        await self.bot.say("API key assigned to dan's settings.")
+        await self.bot.say(msg)
 
     @danset.command(name="maxfilters")
     async def _maxfilters_danset(self, maxfilters):
