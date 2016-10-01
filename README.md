@@ -1,14 +1,14 @@
 # Booru-Cogs
 
-1. [Description](#Description)
-2. [Installation](#Installation)
-3. [Cogs](#Cogs)
-  1. [Dan](#Dan)
+1. [Description](#description)
+2. [Installation](#installation)
+3. [Cogs](#cogs)
+  1. [Dan](#dan)
   2. [e621](#e621)
-  3. [Gel](#Gel)
-  4. [Loli](#Loli)
-  5. [Pony](#Pony)
-4. [Assistance](#Assistance)
+  3. [Gel](#gel)
+  4. [Loli](#loli)
+  5. [Pony](#pony)
+4. [Assistance](#assistance)
 
 ## 1. Description
 This repository will be used to host image board-related cogs. They're used to
