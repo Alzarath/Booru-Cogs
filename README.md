@@ -10,7 +10,7 @@
   5. [Pony](#pony)
 4. [Assistance](#assistance)
 
-## 1. Description
+## Description
 This repository will be used to host image board-related cogs. They're used to
 fetch and display images.
 
