@@ -44,7 +44,7 @@ class Pony:
     async def _add_ponyfilter(self, filtername, filterid):
         """Adds a filter to the global pony filter list
 
-           Filter IDs can be found in the filter list (https://derpiboo.ru/filters/**ID**)
+           Filter IDs can be found in the filter list (https://derpibooru.org/filters/**ID**)
 
            Example: !ponyfilter add legacy 37431"""
         self.availablefilters[filtername] = filterid
@@ -92,7 +92,7 @@ async def fetch_image(self, ctx, randomize, tags):
     self.availablefilters = fileIO("data/pony/availablefilters.json", "load")
     self.activefilters = fileIO("data/pony/activefilters.json", "load")
 
-    search = "https://derpiboo.ru/search.json?q="
+    search = "https://derpibooru.org/search.json?q="
     tagSearch = ""
 
     try:
@@ -110,7 +110,7 @@ async def fetch_image(self, ctx, randomize, tags):
         if randomize == True:
             if "id" in website:
                 imgid = str(website["id"])
-                async with aiohttp.get("https://derpiboo.ru/images/" + imgid + ".json") as r:
+                async with aiohttp.get("https://derpibooru.org/images/" + imgid + ".json") as r:
                     website = await r.json()
                 return "http:" + website["image"]
             else:
