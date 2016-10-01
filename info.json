@@ -1,0 +1,6 @@
+{
+    "NAME" : "Booru-Cogs",
+    "AUTHOR" : "Alzarath",
+    "SHORT" : "Collection of image board-related cogs",
+    "DESCRIPTION" : "Fetch images from various websites using tags and filter lists."
+}

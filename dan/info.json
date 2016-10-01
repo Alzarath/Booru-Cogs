@@ -1,6 +1,7 @@
 {
+    "NAME" : "Dan",
     "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]dan [text...] to get the first result\nUsage: [p]danr [text...] to get a random result\n\nSearch http://danbooru.donmai.us/ for anime pictures.\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
-    "DISABLED" : false,
-    "NAME" : "Searches for and posts anime pictures"
+    "SHORT" : "Search https://danbooru.donmai.us/ for anime pictures",
+    "DESCRIPTION" : "Search https://danbooru.donmai.us/ for anime pictures.\n\nUsage: [p]dan [tags...]: Fetch the latest image\n[p]danr [tags...]: Fetch a random image\n[p]danfilter list: Lists all filters applied to the server\n[p]danfilter add [filter name]: Add a filter to the server\n[p]danfilter del [filter name]: Delete a filter from the server\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
+    "DISABLED" : false
 }

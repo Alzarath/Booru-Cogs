@@ -21,7 +21,7 @@ class Pony:
         if len(text) > 0:
             url = await fetch_image(self, ctx, randomize=False, tags=text)
             await self.bot.say(url)
-        else:   
+        else:
             await send_cmd_help(ctx)
 
     @commands.command(pass_context=True,no_pm=True)
@@ -120,7 +120,7 @@ async def fetch_image(self, ctx, randomize, tags):
                 return "http:" + website["search"][0]["image"]
             else:
                 return "Your search terms gave no results."
-    except:     
+    except:
         return "Error."
 
 def check_folder():

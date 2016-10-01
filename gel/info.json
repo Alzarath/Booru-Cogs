@@ -1,6 +1,7 @@
 {
+    "NAME" : "Gel",
     "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]gel [text...] to get the first result\nUsage: [p]gelr [text...] to get a random result\n\nSearch http://gelbooru.com/ for anime pictures.\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
-    "DISABLED" : false,
-    "NAME" : "Searches for and posts anime pictures"
+    "SHORT" : "Search http://gelbooru.com/ for anime pictures",
+    "DESCRIPTION" : "Search http://gelbooru.com/ for anime pictures.\n\nUsage: [p]gel [tags...]: Fetch the latest image\n[p]gelr [tags...]: Fetch a random image\n[p]gelfilter list: Lists all filters applied to the server\n[p]gelfilter add [filter name]: Add a filter to the server\n[p]gelfilter del [filter name]: Delete a filter from the server\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
+    "DISABLED" : false
 }

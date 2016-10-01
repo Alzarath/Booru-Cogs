@@ -1,6 +1,7 @@
 {
+    "NAME" : "Pony",
     "AUTHOR" : "Alzarath",
-    "DESCRIPTION" : "Usage: [p]pony [text...] to get the first result\nUsage: [p]ponyr [text...] to get a random result\n\nSearch http://derpiboo.ru/ for pony pictures.\nUsage: [p]ponyfilter can be used to list Derpibooru filters, set the filter as a server owner, and add and delete filters as a bot owner. and\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
-    "DISABLED" : false,
-    "NAME" : "Searches for and posts ponies"
+    "SHORT" : "Search https://derpibooru.org/ for pony pictures.",
+    "DESCRIPTION" : "Search https://derpibooru.org/ for pony pictures.\n\nUsage: [p]pony [tags...]: Fetch the latest pony image\n[p]ponyr [tags...]: Fetch a random pony image\n[p]ponyfilter list: Lists available Derpibooru filters\n[p]ponyfilter set [filter name]: Set the current server's filter\n[p]ponyfilter add [filter name] [filter id]: Add a filter\n[p]ponyfilter del [filter name]: Delete a filter\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
+    "DISABLED" : false
 }
