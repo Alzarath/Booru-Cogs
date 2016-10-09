@@ -18,16 +18,14 @@ class Dan:
     async def dan(self, ctx, *text):
         """Retrieves the latest result from Danbooru"""
         if len(text) > 0:
-            url = await fetch_image(self, ctx, randomize=False, tags=text)
-            await self.bot.say(url)
+            await fetch_image(self, ctx, randomize=False, tags=text)
         else:
             await send_cmd_help(ctx)
 
     @commands.command(pass_context=True,no_pm=True)
     async def danr(self, ctx, *text):
         """Retrieves a random result from Danbooru"""
-        url = await fetch_image(self, ctx, randomize=True, tags=text)
-        await self.bot.say(url)
+        await fetch_image(self, ctx, randomize=True, tags=text)
 
     @commands.group(pass_context=True)
     async def danfilter(self, ctx):
@@ -93,9 +91,11 @@ class Dan:
         server = ctx.message.server
         if server.id in self.filters:
             filterlist = '\n'.join(sorted(self.filters[server.id]))
+            targetServer = "{}'s".format(server.name)
         else:
             filterlist = '\n'.join(sorted(self.filters["default"]))
-        await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
+            targetServer = "Default"
+        await self.bot.say("{} dan filter list contains:```\n{}```".format(targetServer, filterlist))
 
     @commands.group(pass_context=True)
     @checks.is_owner()
@@ -155,32 +155,40 @@ async def fetch_image(self, ctx, randomize, tags):
     search = "http://danbooru.donmai.us/posts.json?tags="
     tagSearch = ""
 
+    # Assign tags
+    if tags:
+        tagSearch += "{} ".format(" ".join(tags))
+    if server.id in self.filters:
+        tagSearch += " ".join(self.filters[server.id])
+    else:
+        tagSearch += " ".join(self.filters["default"])
+    search += parse.quote_plus(tagSearch)
+
+    # Randomize results
+    if randomize:
+        search += "&random=y"
+
+    # Assign login information
+    if self.settings["username"] != "" and self.settings["api_key"] != "":
+        search += "&login={}&api_key={}".format(self.settings["username"], self.settings["api_key"])
+
+    message = await self.bot.say("Fetching dan image...")
+
     try:
-        if tags:
-            tagSearch += "{} ".format(" ".join(tags))
-        if server.id in self.filters:
-            tagSearch += " ".join(self.filters[server.id])
-        else:
-            tagSearch += " ".join(self.filters["default"])
-        search += parse.quote_plus(tagSearch)
-        if randomize == True:
-            search += "&random=y"
-        if self.settings["username"] != "" and self.settings["api_key"] != "":
-            search += "&login={}&api_key={}".format(self.settings["username"], self.settings["api_key"])
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
             if "success" not in website:
                 for index in range(len(website)): # Goes through each result until it finds one that works
                     if "file_url" in website[index]:
-                        return "http://danbooru.donmai.us{}".format(website[index]["file_url"])
-                return "Cannot find an image that can be viewed by you."
+                        return await self.bot.edit_message(message, "http://danbooru.donmai.us{}".format(website[index]["file_url"]))
+                return await self.bot.edit_message(message, "Cannot find an image that can be viewed by you.")
             else:
-                return "{} Keep in mind the filter list is not excluded from tag limits.".format(website["message"])
+                return await self.bot.edit_message(message, "{}".format(website["message"]))
         else:
-            return "Your search terms gave no results."
+            return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
-        return "Error."
+        return await self.bot.edit_message(message, "Error.")
 
 def check_folder():
     if not os.path.exists("data/dan"):

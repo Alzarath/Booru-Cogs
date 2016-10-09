@@ -11,16 +11,16 @@ import os
 class Pony:
     def __init__(self, bot):
         self.bot = bot
-        self.availablefilters = fileIO("data/pony/availablefilters.json", "load")
-        self.activefilters = fileIO("data/pony/activefilters.json", "load")
+        self.filters = fileIO("data/pony/filters.json", "load")
+        self.settings = fileIO("data/pony/settings.json", "load")
+
 
     @commands.command(pass_context=True,no_pm=True)
     async def pony(self, ctx, *text):
         """Retrieves the latest result from Derpibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            url = await fetch_image(self, ctx, randomize=False, tags=text)
-            await self.bot.say(url)
+            await fetch_image(self, ctx, randomize=False, tags=text)
         else:
             await send_cmd_help(ctx)
 
@@ -28,100 +28,141 @@ class Pony:
     async def ponyr(self, ctx, *text):
         """Retrieves a random result from Derpibooru"""
         server = ctx.message.server
-        url = await fetch_image(self, ctx, randomize=True, tags=text)
-        await self.bot.say(url)
+        await fetch_image(self, ctx, randomize=True, tags=text)
 
-    @commands.group(pass_context = True)
+    @commands.group(pass_context=True)
     async def ponyfilter(self, ctx):
-        """Manages filters.
+        """Manages pony filters
+           Warning: Can be used to allow NSFW images
 
-           Filters determine what tags will not show up in the results"""
+           Filters automatically apply tags to each search"""
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
 
-    @ponyfilter.command(name="add")
-    @checks.is_owner()
-    async def _add_ponyfilter(self, filtername, filterid):
-        """Adds a filter to the global pony filter list
-
-           Filter IDs can be found in the filter list (https://derpibooru.org/filters/**ID**)
-
-           Example: !ponyfilter add legacy 37431"""
-        self.availablefilters[filtername] = filterid
-        fileIO("data/pony/availablefilters.json", "save", self.availablefilters)
-        await self.bot.say("Filter '{}' added to the global pony filter list.".format(filtername))
-
-    @ponyfilter.command(name="del")
-    @checks.is_owner()
-    async def _del_ponyfilter(self, filtername):
-        """Deletes a filter from the global pony filter list
-
-           Example: !ponyfilter del legacy"""
-        for i in self.availablefilters:
-            if self.availablefilters[i] == self.availablefilters[filtername]:
-                self.availablefilters.pop(i)
-                fileIO("data/pony/availablefilters.json", "save", self.availablefilters)
-                await self.bot.say("Filter '{}' deleted from the global pony filter list.".format(filtername))
-                break
-
-    @ponyfilter.command(name="list")
-    async def _list_ponyfilter(self):
-        """Lists all of the filters available in the global pony filter list."""
-        filterlist = '\n'.join(sorted(self.availablefilters))
-        await self.bot.say("The global pony filter list contains:```\n" + filterlist + "```")
-
-    @ponyfilter.command(name="set", pass_context=True)
+    @ponyfilter.command(name="add", pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_server=True)
-    async def _set_ponyfilter(self, ctx, filtername : str="default"):
-        """Sets the filter for the current server
-           Warning: Some filters may display NSFW images
+    async def _add_ponyfilter(self, ctx, filtertag : str):
+        """Adds a tag to the server's pony filter list
 
-           Default filters: default, everything, dark, r34
-
-           Example: !ponyfilter set default"""
+           Example: !ponyfilter add safe"""
         server = ctx.message.server
-        if filtername in self.availablefilters:
-            self.activefilters[server.id] = filtername
-            fileIO("data/pony/activefilters.json", "save", self.activefilters)
-            await self.bot.say("Filter set to '{}'.".format(filtername))
+        if server.id not in self.filters:
+            self.filters[server.id] = self.filters["default"]
+            fileIO("data/pony/filters.json", "save", self.filters)
+            self.filters = fileIO("data/pony/filters.json", "load")
+        if len(self.filters[server.id]) < int(self.settings["maxfilters"]):
+            if filtertag not in self.filters[server.id]:
+                self.filters[server.id].append(filtertag)
+                fileIO("data/pony/filters.json", "save", self.filters)
+                await self.bot.say("Filter '{}' added to the server's pony filter list.".format(filtertag))
+            else:
+                await self.bot.say("Filter '{}' is already in the server's pony filter list.".format(filtertag))
         else:
-            await self.bot.say("'{}' does not exist in the filter list.".format(filtername))
+            await self.bot.say("This server has exceeded the maximum filters ({}/{}). https://www.youtube.com/watch?v=1MelZ7xaacs".format(len(self.filters[server.id]), self.settings["maxfilters"]))
+
+    @ponyfilter.command(name="del", pass_context=True, no_pm=True)
+    @checks.admin_or_permissions(manage_server=True)
+    async def _del_ponyfilter(self, ctx, filtertag : str=""):
+        """Deletes a tag from the server's pony filter list
+
+           Without arguments, reverts to the default loli filter list
+
+           Example: !ponyfilter del safe"""
+        server = ctx.message.server
+        if len(filtertag) > 0:
+            if server.id not in self.filters:
+                self.filters[server.id] = self.filters["default"]
+                fileIO("data/pony/filters.json", "save", self.filters)
+                self.filters = fileIO("data/pony/filters.json", "load")
+            if filtertag in self.filters[server.id]:
+                self.filters[server.id].remove(filtertag)
+                fileIO("data/pony/filters.json", "save", self.filters)
+                await self.bot.say("Filter '{}' deleted from the server's pony filter list.".format(filtertag))
+            else:
+                await self.bot.say("Filter '{}' does not exist in the server's pony filter list.".format(filtertag))
+        else:
+            if server.id in self.filters:
+                del self.filters[server.id]
+                fileIO("data/pony/filters.json", "save", self.filters)
+                await self.bot.say("Reverted the server to the default pony filter list.")
+            else:
+                await self.bot.say("Server is already using the default pony filter list.")
+
+    @ponyfilter.command(name="list", pass_context=True)
+    async def _list_ponyfilter(self, ctx):
+        """Lists all of the filters currently applied to the current server"""
+        server = ctx.message.server
+        if server.id in self.filters:
+            filterlist = '\n'.join(sorted(self.filters[server.id]))
+            targetServer = "{}'s".format(server.name)
+        else:
+            filterlist = '\n'.join(sorted(self.filters["default"]))
+            targetServer = "Default"
+        await self.bot.say("{} pony filter list contains:```\n{}```".format(targetServer, filterlist))
+
+    @commands.group(pass_context=True)
+    @checks.is_owner()
+    async def ponyset(self, ctx):
+        """Manages pony options"""
+        if ctx.invoked_subcommand is None:
+            await send_cmd_help(ctx)
+
+    @ponyset.command(name="maxfilters")
+    async def _maxfilters_ponyset(self, maxfilters):
+        """Sets the global tag limit for the filter list
+
+           Gives an error when a user tries to add a filter while the server's filter list contains a certain amount of tags"""
+        self.settings["maxfilters"] = maxfilters
+        fileIO("data/pony/settings.json", "save", self.settings)
+        await self.bot.say("Maximum filters allowed per server for pony set to '{}'.".format(maxfilters))
 
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
-    self.availablefilters = fileIO("data/pony/availablefilters.json", "load")
-    self.activefilters = fileIO("data/pony/activefilters.json", "load")
+    self.filters = fileIO("data/pony/filters.json", "load")
 
     search = "https://derpibooru.org/search.json?q="
     tagSearch = ""
 
-    try:
+    # Assign tags
+    if tags:
+        tagSearch += "{} ".format(" ".join(tags))
+    if server.id in self.filters:
+        if self.filters[server.id] != [] and tags:
+            tagSearch += ", "
+        tagSearch += ", ".join(self.filters[server.id])
+    else:
         if tags:
-            tagSearch += "{} ".format(" ".join(tags))
-        search += parse.quote_plus(tagSearch)
-        if server.id in self.activefilters:
-            search += "&filter_id=" + self.availablefilters[self.activefilters[server.id]]
+            tagSearch += ", "
+        tagSearch += ", ".join(self.filters["default"])
+    search += parse.quote_plus(tagSearch)
+
+    # Randomize results
+    if randomize:
+        if not tags and self.filters[server.id] == []:
+            search = "https://derpibooru.org/images/random.json"
         else:
-            search += "&filter_id=" + self.availablefilters["default"]
-        if randomize == True:
             search += "&random_image=y"
+
+    message = await self.bot.say("Fetching pony image...")
+
+    try:
         async with aiohttp.get(search) as r:
             website = await r.json()
-        if randomize == True:
+        if randomize:
             if "id" in website:
                 imgid = str(website["id"])
                 async with aiohttp.get("https://derpibooru.org/images/" + imgid + ".json") as r:
                     website = await r.json()
-                return "http:" + website["image"]
+                return await self.bot.edit_message(message, "http:{}".format(website["image"]))
             else:
-                return "Your search terms gave no results."
+                return await self.bot.edit_message(message, "Your search terms gave no results.")
         else:
             if website["search"] != []:
-                return "http:" + website["search"][0]["image"]
+                return await self.bot.edit_message(message, "http:{}".format(website["search"][0]["image"]))
             else:
-                return "Your search terms gave no results."
+                return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
-        return "Error."
+        return await self.bot.edit_message(message, "Error.")
 
 def check_folder():
     if not os.path.exists("data/pony"):
@@ -129,16 +170,21 @@ def check_folder():
         os.makedirs("data/pony")
 
 def check_files():
-    availablefilters = {"default":"100073", "everything":"56027", "dark":"37429", "r34":"37432"}
-    activefilters = {}
+    filters = {"default":["-grimdark", "-grotesque", "-meme", "safe", "-semi-grimdark", "-spoiler:*", "-suggestive", "-vulgar"]}
+    settings = {"maxfilters":"50"}
 
-    if not fileIO("data/pony/availablefilters.json", "check"):
-        print("Creating default pony's availablefilters.json...")
-        fileIO("data/pony/availablefilters.json", "save", availablefilters)
-
-    if not fileIO("data/pony/activefilters.json", "check"):
-        print("Creating default pony's activefilters.json...")
-        fileIO("data/pony/activefilters.json", "save", activefilters)
+    if not fileIO("data/pony/filters.json", "check"):
+        print("Creating default pony filters.json...")
+        fileIO("data/pony/filters.json", "save", filters)
+    else:
+        filterlist = fileIO("data/pony/filters.json", "load")
+        if "default" not in filterlist:
+            filterlist["default"] = filters["default"]
+            print("Adding default pony filters...")
+            fileIO("data/pony/filters.json", "save", filterlist)
+    if not fileIO("data/pony/settings.json", "check"):
+        print("Creating default pony settings.json...")
+        fileIO("data/pony/settings.json", "save", settings)
 
 def setup(bot):
     check_folder()

@@ -10,7 +10,7 @@
   5. [Pony](#pony)
 4. [Assistance](#assistance)
 
-## 1. Description
+## Description
 This repository will be used to host image board-related cogs. They're used to
 fetch and display images.
 
@@ -101,7 +101,7 @@ Fetches loli-related images from <https://lolibooru.moe/>
   - `del`¹ deletes the current server's filter list, making them use the default
 - `[p]loliset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
+    list per server
 
 ### Pony
 Fetches pony-related images from <http://derpiboo.ru/>
@@ -110,15 +110,17 @@ Fetches pony-related images from <http://derpiboo.ru/>
 - `[p]pony [tags...]` fetches the latest image with the entered tags
 - `[p]ponyr [tags...]` fetches a random image, optionally with the entered tags
 - `[p]ponyfilter [option]` is used to adjust filter options
-  - `list` displays all of the available filters
-  - `set [name]`¹ is used to set the current filter for the current server
-  - `add [name] [id]`² adds a filter associated with an id³ to the filter list
-  - `del [name]`² deletes a filter from the filter list
+  - `list` display all the tags from the current server's filter list
+  - `add [tag]`¹ adds a tag to the current server's filter list
+  - `del [tag]`¹ deletes a tag from the current server's filter list
+  - `del`¹ deletes the current server's filter list, making them use the default
+- `[p]ponyset [option]` is used to adjust cog settings
+  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
+    list per server
 
 ### Annotations
 ¹Commands may only be used by users with the manage_server permission
 ²Commands may only be used by the bot owner
-³IDs can be found at <https://derpibooru.org/filters/>`ID Number`
 
 ## Assistance
 Need help? Have an idea for a new booru-related cog?

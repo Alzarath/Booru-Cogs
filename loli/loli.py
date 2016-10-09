@@ -18,8 +18,7 @@ class Loli:
         """Retrieves the latest result from Lolibooru"""
         server = ctx.message.server
         if len(text) > 0:
-            url = await fetch_image(self, ctx, randomize=False, tags=text)
-            await self.bot.say(url)
+            await fetch_image(self, ctx, randomize=False, tags=text)
         else:
             await send_cmd_help(ctx)
 
@@ -27,8 +26,7 @@ class Loli:
     async def lolir(self, ctx, *text):
         """Retrieves a random result from Lolibooru"""
         server = ctx.message.server
-        url = await fetch_image(self, ctx, randomize=True, tags=text)
-        await self.bot.say(url)
+        await fetch_image(self, ctx, randomize=True, tags=text)
 
     @commands.group(pass_context=True)
     async def lolifilter(self, ctx):
@@ -94,9 +92,11 @@ class Loli:
         server = ctx.message.server
         if server.id in self.filters:
             filterlist = '\n'.join(sorted(self.filters[server.id]))
+            targetServer = "{}'s".format(server.name)
         else:
             filterlist = '\n'.join(sorted(self.filters["default"]))
-        await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
+            targetServer = "Default"
+        await self.bot.say("{} loli filter list contains:```\n{}```".format(targetServer, filterlist))
 
     @commands.group(pass_context=True)
     @checks.is_owner()
@@ -117,29 +117,33 @@ class Loli:
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/loli/filters.json", "load")
-    
+
     search = "https://lolibooru.moe/post/index.json?limit=1&tags="
     tagSearch = ""
 
+    # Assign tags
+    if tags:
+        tagSearch += "{} ".format(" ".join(tags))
+    if server.id in self.filters:
+        tagSearch += " ".join(self.filters[server.id])
+    else:
+        tagSearch += " ".join(self.filters["default"])
+    if randomize:
+        tagSearch += "+order:random"
+    search += parse.quote_plus(tagSearch)
+
+    message = await self.bot.say("Fetching loli image...")
+
     try:
-        if tags:
-            tagSearch += "{} ".format(" ".join(tags))
-        if server.id in self.filters:
-            tagSearch += " ".join(self.filters[server.id])
-        else:
-            tagSearch += " ".join(self.filters["default"])
-        search += parse.quote_plus(tagSearch)
-        if randomize == True:
-            search += "+order:random"
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
             url = website[0]["file_url"]
-            return url.replace(" ", "+")
+            return await self.bot.edit_message(message, url.replace(" ", "+"))
         else:
-            return "Your search terms gave no results."
+            return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
-        return "Error."
+        return await self.bot.edit_message(message, "Error.")
 
 def check_folder():
     if not os.path.exists("data/loli"):

@@ -23,16 +23,14 @@ class E621:
     async def e621(self, ctx, *text):
         """Retrieves the latest result from e621"""
         if len(text) > 0:
-            url = await fetch_image(self=self, ctx=ctx, randomize=False, tags=text)
-            await self.bot.say(url)
+            await fetch_image(self=self, ctx=ctx, randomize=False, tags=text)
         else:
             await send_cmd_help(ctx)
 
     @commands.command(pass_context=True, no_pm=True)
     async def e621r(self, ctx, *text):
         """Retrieves a random result from e621"""
-        url = await fetch_image(self=self, ctx=ctx, randomize=True, tags=text)
-        await self.bot.say(url)
+        await fetch_image(self=self, ctx=ctx, randomize=True, tags=text)
 
     @commands.group(pass_context=True)
     async def e621filter(self, ctx):
@@ -98,9 +96,11 @@ class E621:
         server = ctx.message.server
         if server.id in self.filters:
             filterlist = '\n'.join(sorted(self.filters[server.id]))
+            targetServer = "{}'s".format(server.name)
         else:
             filterlist = '\n'.join(sorted(self.filters["default"]))
-        await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
+            targetServer = "Default"
+        await self.bot.say("{} e621 filter list contains:```\n{}```".format(targetServer, filterlist))
 
     @commands.group(pass_context=True)
     @checks.is_owner()
@@ -125,27 +125,31 @@ async def fetch_image(self, ctx, randomize, tags):
     search = "http://e621.net/post/index.json?limit=1&tags="
     tagSearch = ""
 
+    # Assign tags
+    if tags:
+        tagSearch += "{} ".format(" ".join(tags))
+    if server.id in self.filters:
+        tagSearch += " ".join(self.filters[server.id])
+    else:
+        tagSearch += " ".join(self.filters["default"])
+    if randomize:
+        tagSearch += "+order:random"
+    search += parse.quote_plus(tagSearch)
+
+    message = await self.bot.say("Fetching e621 image...")
+
     try:
-        if tags:
-            tagSearch += "{} ".format(" ".join(tags))
-        if server.id in self.filters:
-            tagSearch += " ".join(self.filters[server.id])
-        else:
-            tagSearch += " ".join(self.filters["default"])
-        search += parse.quote_plus(tagSearch)
-        if randomize == True:
-            search += "+order:random"
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website != []:
             if "success" not in website:
-                return website[0]["file_url"]
+                return await self.bot.edit_message(message, website[0]["file_url"])
             else:
-                return "{} Keep in mind the filter list is not excluded from tag limits.".format(website["message"])
+                return await self.bot.edit_message(message, "{}".format(website["message"]))
         else:
-            return "Your search terms gave no results."
+            return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
-        return "Error."
+        return await self.bot.edit_message(message, "Error.")
 
 def check_folder():
     if not os.path.exists("data/e621"):

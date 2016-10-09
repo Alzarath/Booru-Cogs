@@ -20,8 +20,7 @@ class Gel:
         """Retrieves the latest result from Gelbooru"""
         server = ctx.message.server
         if len(text) > 0:
-            url = await fetch_image(self, ctx, randomize=False, tags=text)
-            await self.bot.say(url)
+            await fetch_image(self, ctx, randomize=False, tags=text)
         else:
             await send_cmd_help(ctx)
 
@@ -29,8 +28,7 @@ class Gel:
     async def gelr(self, ctx, *text):
         """Retrieves a random result from Gelbooru"""
         server = ctx.message.server
-        url = await fetch_image(self, ctx, randomize=True, tags=text)
-        await self.bot.say(url)
+        await fetch_image(self, ctx, randomize=True, tags=text)
 
     @commands.group(pass_context=True)
     async def gelfilter(self, ctx):
@@ -96,9 +94,11 @@ class Gel:
         server = ctx.message.server
         if server.id in self.filters:
             filterlist = '\n'.join(sorted(self.filters[server.id]))
+            targetServer = "{}'s".format(server.name)
         else:
             filterlist = '\n'.join(sorted(self.filters["default"]))
-        await self.bot.say("This server's filter list contains:```\n{}```".format(filterlist))
+            targetServer = "Default"
+        await self.bot.say("{} gel filter list contains:```\n{}```".format(targetServer, filterlist))
 
     @commands.group(pass_context=True)
     @checks.is_owner()
@@ -123,14 +123,18 @@ async def fetch_image(self, ctx, randomize, tags):
     search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags="
     tagSearch = ""
 
+    # Assign tags
+    if tags:
+        tagSearch += "{} ".format(" ".join(tags))
+    if server.id in self.filters:
+        tagSearch += " ".join(self.filters[server.id])
+    else:
+        tagSearch += " ".join(self.filters["default"])
+    search += parse.quote_plus(tagSearch)
+
+    message = await self.bot.say("Fetching gel image...")
+
     try:
-        if tags:
-            tagSearch += "{} ".format(" ".join(tags))
-        if server.id in self.filters:
-            tagSearch += " ".join(self.filters[server.id])
-        else:
-            tagSearch += " ".join(self.filters["default"])
-        search += parse.quote_plus(tagSearch)
         async with aiohttp.get(search) as r:
             website = await r.text()
         attr = website.split('"')[1::2]
@@ -142,17 +146,17 @@ async def fetch_image(self, ctx, randomize, tags):
             else:
                 cindex += 1
         if count > 0:
-            if randomize == True:
+            if randomize:
                 pid = str(round(count * random.random())) # Generates a random number between 0 and the amount of available images
-                search += "&pid=" + pid # Grabs an image at the generated number index
-                async with aiohttp.get(search) as r:
+                search += "&pid=" + pid
+                async with aiohttp.get(search) as r: # Fetches an image with the chosen pid
                     website = await r.text()
             result = xml.etree.ElementTree.fromstring(website)
-            return result[0].get('file_url')
+            return await self.bot.edit_message(message, result[0].get('file_url'))
         else:
-            return "Your search terms gave no results."
+            return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
-        return "Error."
+        return await self.bot.edit_message(message, "Error.")
 
 def check_folder():
     if not os.path.exists("data/gel"):
