@@ -129,7 +129,7 @@ async def fetch_image(self, ctx, randomize, tags):
     else:
         tagSearch += " ".join(self.filters["default"])
     if randomize:
-        tagSearch += "+order:random"
+        tagSearch += " order:random"
     search += parse.quote_plus(tagSearch)
 
     message = await self.bot.say("Fetching loli image...")
