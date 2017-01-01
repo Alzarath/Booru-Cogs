@@ -120,10 +120,11 @@ async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/pony/filters.json", "load")
 
+    # Initialize base URL
     search = "https://derpibooru.org/search.json?q="
     tagSearch = ""
 
-    # Assign tags
+    # Apply tags to URL
     if tags:
         tagSearch += "{} ".format(" ".join(tags))
     if server.id in self.filters:
@@ -143,8 +144,14 @@ async def fetch_image(self, ctx, randomize, tags):
         else:
             search += "&random_image=y"
 
+    # Apply Derpibooru's "Everything" filter
+    search += "&filter_id=56027"
+
+
+    # Inform users about image retrieving
     message = await self.bot.say("Fetching pony image...")
 
+    # Fetch and display the image or an error
     try:
         async with aiohttp.get(search) as r:
             website = await r.json()
