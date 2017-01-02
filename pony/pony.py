@@ -160,12 +160,12 @@ async def fetch_image(self, ctx, randomize, tags):
                 imgid = str(website["id"])
                 async with aiohttp.get("https://derpibooru.org/images/" + imgid + ".json") as r:
                     website = await r.json()
-                return await self.bot.edit_message(message, "http:{}".format(website["image"]))
+                return await self.bot.edit_message(message, "https:{}".format(website["image"]))
             else:
                 return await self.bot.edit_message(message, "Your search terms gave no results.")
         else:
             if website["search"] != []:
-                return await self.bot.edit_message(message, "http:{}".format(website["search"][0]["image"]))
+                return await self.bot.edit_message(message, "https:{}".format(website["search"][0]["image"]))
             else:
                 return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
