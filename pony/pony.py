@@ -137,16 +137,15 @@ async def fetch_image(self, ctx, randomize, tags):
         tagSearch += ", ".join(self.filters["default"])
     search += parse.quote_plus(tagSearch)
 
-    # Randomize results
+    # Randomize results and apply Derpibooru's "Everything" filter
     if randomize:
-        if not tags and self.filters[server.id] == []:
-            search = "https://derpibooru.org/images/random.json"
+        if not tags and server.id in self.filters:
+           if self.filters[server.id] == []:
+               search = "https://derpibooru.org/images/random.json?filter_id=56027"
+           else:
+               search += "&random_image=y&filter_id=56027"
         else:
-            search += "&random_image=y"
-
-    # Apply Derpibooru's "Everything" filter
-    search += "&filter_id=56027"
-
+           search += "&random_image=y&filter_id=56027"
 
     # Inform users about image retrieving
     message = await self.bot.say("Fetching pony image...")
@@ -177,7 +176,7 @@ def check_folder():
         os.makedirs("data/pony")
 
 def check_files():
-    filters = {"default":["-grimdark", "-grotesque", "-meme", "safe", "-semi-grimdark", "-spoiler:*", "-suggestive", "-vulgar"]}
+    filters = {"default":["-meme", "safe", "-spoiler:*", "-vulgar"]}
     settings = {"maxfilters":"50"}
 
     if not fileIO("data/pony/filters.json", "check"):
