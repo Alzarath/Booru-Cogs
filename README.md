@@ -45,16 +45,19 @@ and
 ## Features
 
 ### Search
+
 The default functionality of the cogs. Searches the associated booru for the
 entered tags and posts the latest result in the chat.
 `[p][booru] [tags...]`
 
 ### Random Search
+
 Searches for a random image from the associated booru, optionally with tags,
 and posts the result in the chat.
 `[p][booru]r [tags...]`
 
 ### Filter List
+
 Filter lists can be used to automatically apply tags to any given search. 
 These tags do count toward any sort of tag limit restrictions a booru may 
 contain. Every booru contains a set of tags by default that attempt to prevent
@@ -64,12 +67,14 @@ Adding a tag to the filter list is simply a matter of running a command and
 supplying the desired tag.
 
 #### Add
+
 `[p][booru]filter add [tag]`
 Similarly, deleting a filter is done similarly. Running the delete command
 without a supplied tag will instead reset the server's filter list to the
 default.
 
 #### Delete
+
 `[p][booru]filter del [tag]`
 
 ### Set
