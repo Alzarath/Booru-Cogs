@@ -1,0 +1,7 @@
+{
+    "NAME" : "Kona",
+    "AUTHOR" : "Alzarath",
+    "SHORT" : "Search https://konachan.com/ for anime wallpapers",
+    "DESCRIPTION" : "Search https://konachan.com/ for anime wallpapers.\n\nUsage: [p]kona [tags...]: Fetch the latest image\n[p]konar [tags...]: Fetch a random image\n[p]konafilter list: Lists all filters applied to the server\n[p]konafilter add [filter name]: Add a filter to the server\n[p]konafilter del [filter name]: Delete a filter from the server\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
+    "DISABLED" : false
+}

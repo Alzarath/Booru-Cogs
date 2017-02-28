@@ -11,8 +11,9 @@
   1. [Dan](#dan)
   2. [e621](#e621)
   3. [Gel](#gel)
-  4. [Loli](#loli)
-  5. [Pony](#pony)
+  4. [Kona](#kona)
+  5. [Loli](#loli)
+  6. [Pony](#pony)
 5. [Assistance](#assistance)
 
 ## Description
@@ -184,6 +185,23 @@ Fetches anime-related images from <https://gelbooru.com/>
   - `del [tag]`¹ deletes a tag from the current server's filter list
   - `del`¹ deletes the current server's filter list, making them use the default
 - `[p]gelset [option]` is used to adjust cog settings
+  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
+                           list per server
+
+### Kona
+
+Fetches anime-related wallpapers from <https://konachan.com/>
+
+#### Kona Commands
+
+- `[p]kona [tags...]` fetches the latest image with the entered tags
+- `[p]konar [tags...]` fetches a random image, optionally with the entered tags
+- `[p]konafilter [option]` is used to adjust filter options
+  - `list` display all the tags from the current server's filter list
+  - `add [tag]`¹ adds a tag to the current server's filter list
+  - `del [tag]`¹ deletes a tag from the current server's filter list
+  - `del`¹ deletes the current server's filter list, making them use the default
+- `[p]konaset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
 
