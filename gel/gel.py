@@ -152,7 +152,7 @@ async def fetch_image(self, ctx, randomize, tags):
                 async with aiohttp.get(search) as r: # Fetches an image with the chosen pid
                     website = await r.text()
             result = xml.etree.ElementTree.fromstring(website)
-            return await self.bot.edit_message(message, result[0].get('file_url'))
+            return await self.bot.edit_message(message, "https:{}".format(result[0].get('file_url')))
         else:
             return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
