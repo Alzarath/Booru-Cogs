@@ -199,75 +199,75 @@ async def fetch_image(self, ctx, randomize, tags):
                 async with aiohttp.get("https://derpibooru.org/images/" + imgid + ".json") as r:
                     website = await r.json()
                 imageURL = "https:{}".format(website["image"])
-                if verbose:
-                    # Checks for the rating and sets an appropriate color
-                    tagList = website["tags"].split(", ")
-                    for i in range(0, len(tagList)):
-                        if tagList[i] == "safe":
-                            rating = tagList.pop(i)
-                            ratingColor = "00FF00"
-                            break
-                        if tagList[i] == "suggestive":
-                            rating = tagList.pop(i)
-                            ratingColor = "FFFF00"
-                            break
-                        if tagList[i] == "questionable":
-                            rating = tagList.pop(i)
-                            ratingColor = "FF9900"
-                            break
-                        if tagList[i] == "explicit":
-                            ratingColor = "FF0000"
-                            rating = tagList.pop(i)
-                            break
-                    if not rating:
-                        ratingColor = "FFFFFF"
-                        rating = "unknown"
-
-                    # Sets the URL to be linked
-                    link = "https://derpibooru.org/{}".format(website["id"])
-                    
-                    # Initialize verbose embed
-                    output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
-
-                    # Checks for artists
-                    artist = []
-                    for i in range(0, len(tagList)):
-                        if "artist:" in tagList[i]:
-                            while "artist:" in tagList[i]:
-                                artist.append(tagList.pop(i)[7:])
-                            break
-
-                    # Adds the artist field if there are any artists
-                    if len(artist) == 1:
-                        output.add_field(name="Artist", value=artist[0])
-                    elif len(artist) > 1:
-                        output.add_field(name="Artists", value=", ".join(artist))
-
-                    # Sets the thumbnail and adds the rating and tag fields to the embed
-                    output.add_field(name="Rating", value=rating)
-                    output.add_field(name="Tags", value=", ".join(tagList))
-                    output.set_thumbnail(url=imageURL)
-                else:
-                    # Sets the link to the image URL if verbose mode is not enabled
-                    output = imageURL
-                
-                # Edits the pending message with the results
-                if verbose:
-                    return await self.bot.edit_message(message, "Image found.", embed=output)
-                else:
-                    return await self.bot.edit_message(message, output)
             else:
                 return await self.bot.edit_message(message, "Your search terms gave no results.")
         else:
             if website["search"] != []:
-                url = "https:{}".format(website["search"][0]["image"])
+                website = website["search"][0]
+                imageURL = "https:{}".format(website["image"])
             else:
                 return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
         return await self.bot.edit_message(message, "Error.")
 
-    # Display results
-    return await self.bot.edit_message(message, )
+    # If verbose mode is enabled, create an embed and fill it with information
+    if verbose:
+        # Checks for the rating and sets an appropriate color
+        tagList = website["tags"].split(", ")
+        for i in range(0, len(tagList)):
+            if tagList[i] == "safe":
+                rating = tagList.pop(i)
+                ratingColor = "00FF00"
+                break
+            if tagList[i] == "suggestive":
+                rating = tagList.pop(i)
+                ratingColor = "FFFF00"
+                break
+            if tagList[i] == "questionable":
+                rating = tagList.pop(i)
+                ratingColor = "FF9900"
+                break
+            if tagList[i] == "explicit":
+                ratingColor = "FF0000"
+                rating = tagList.pop(i)
+                break
+        if not rating:
+            ratingColor = "FFFFFF"
+            rating = "unknown"
+
+        # Sets the URL to be linked
+        link = "https://derpibooru.org/{}".format(website["id"])
+        
+        # Initialize verbose embed
+        output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
+
+        # Checks for artists
+        artist = []
+        for i in range(0, len(tagList)):
+            if "artist:" in tagList[i]:
+                while "artist:" in tagList[i]:
+                    artist.append(tagList.pop(i)[7:])
+                break
+
+        # Adds the artist field if there are any artists
+        if len(artist) == 1:
+            output.add_field(name="Artist", value=artist[0])
+        elif len(artist) > 1:
+            output.add_field(name="Artists", value=", ".join(artist))
+
+        # Sets the thumbnail and adds the rating and tag fields to the embed
+        output.add_field(name="Rating", value=rating)
+        output.add_field(name="Tags", value=", ".join(tagList))
+        output.set_thumbnail(url=imageURL)
+    else:
+        # Sets the link to the image URL if verbose mode is not enabled
+        output = imageURL
+    
+    # Edits the pending message with the results
+    if verbose:
+        return await self.bot.edit_message(message, "Image found.", embed=output)
+    else:
+        return await self.bot.edit_message(message, output)
 
 def check_folder():
     if not os.path.exists("data/pony"):
