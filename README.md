@@ -187,6 +187,7 @@ Fetches anime-related images from <https://gelbooru.com/>
 - `[p]gelset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
+  - `verbose`¹ toggles a verbose mode which displays more info in an embed
 
 ### Kona
 
