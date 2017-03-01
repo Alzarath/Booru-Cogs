@@ -101,14 +101,44 @@ class Pony:
         await self.bot.say("{} pony filter list contains:```\n{}```".format(targetServer, filterlist))
 
     @commands.group(pass_context=True)
-    @checks.is_owner()
     async def ponyset(self, ctx):
         """Manages pony options"""
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
 
+    @ponyset.command(pass_context=True,name="verbose")
+    @checks.admin_or_permissions(manage_server=True)
+    async def _verbose_ponyset(self, ctx, toggle : str="toggle"):
+        """Toggles verbose mode"""
+        server = ctx.message.server
+        if server.id not in self.settings:
+            self.settings[server.id] = {"verbose":False}
+            fileIO("data/pony/settings.json", "save", self.settings)
+            self.settings = fileIO("data/pony/settings.json", "load")
+        if toggle.lower() == "on" or toggle.lower() == "true" or toggle.lower() == "enable":
+            if not self.settings[server.id]["verbose"]:
+                self.settings[server.id]["verbose"] = True
+                await self.bot.say("Verbose mode is now enabled.")
+            else:
+                await self.bot.say("Verbose mode is already enabled.")
+        elif toggle.lower() == "off" or toggle.lower() == "false" or toggle.lower() == "disable":
+            if self.settings[server.id]["verbose"]:
+                self.settings[server.id]["verbose"] = False
+                await self.bot.say("Verbose mode is now disabled.")
+            else:
+                await self.bot.say("Verbose mode is already disabled.")
+        else:
+            if self.settings[server.id]["verbose"]:
+                self.settings[server.id]["verbose"] = False
+                await self.bot.say("Verbose mode is now disabled.")
+            else:
+                self.settings[server.id]["verbose"] = True
+                await self.bot.say("Verbose mode is now enabled.")
+        fileIO("data/pony/settings.json", "save", self.settings)
+
     @ponyset.command(name="maxfilters")
-    async def _maxfilters_ponyset(self, maxfilters):
+    @checks.is_owner()
+    async def _maxfilters_ponyset(self, maxfilters : int):
         """Sets the global tag limit for the filter list
 
            Gives an error when a user tries to add a filter while the server's filter list contains a certain amount of tags"""
@@ -119,6 +149,15 @@ class Pony:
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/pony/filters.json", "load")
+    self.settings = fileIO("data/pony/settings.json", "load")
+
+    if server.id in self.settings:
+        if self.settings[server.id]["verbose"]:
+            verbose = True
+        else:
+            verbose = False
+    else:
+        verbose = False
 
     # Initialize base URL
     search = "https://derpibooru.org/search.json?q="
@@ -159,16 +198,76 @@ async def fetch_image(self, ctx, randomize, tags):
                 imgid = str(website["id"])
                 async with aiohttp.get("https://derpibooru.org/images/" + imgid + ".json") as r:
                     website = await r.json()
-                return await self.bot.edit_message(message, "https:{}".format(website["image"]))
+                imageURL = "https:{}".format(website["image"])
+                if verbose:
+                    # Checks for the rating and sets an appropriate color
+                    tagList = website["tags"].split(", ")
+                    for i in range(0, len(tagList)):
+                        if tagList[i] == "safe":
+                            rating = tagList.pop(i)
+                            ratingColor = "00FF00"
+                            break
+                        if tagList[i] == "suggestive":
+                            rating = tagList.pop(i)
+                            ratingColor = "FFFF00"
+                            break
+                        if tagList[i] == "questionable":
+                            rating = tagList.pop(i)
+                            ratingColor = "FF9900"
+                            break
+                        if tagList[i] == "explicit":
+                            ratingColor = "FF0000"
+                            rating = tagList.pop(i)
+                            break
+                    if not rating:
+                        ratingColor = "FFFFFF"
+                        rating = "unknown"
+
+                    # Sets the URL to be linked
+                    link = "https://derpibooru.org/{}".format(website["id"])
+                    
+                    # Initialize verbose embed
+                    output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
+
+                    # Checks for artists
+                    artist = []
+                    for i in range(0, len(tagList)):
+                        if "artist:" in tagList[i]:
+                            while "artist:" in tagList[i]:
+                                artist.append(tagList.pop(i)[7:])
+                            break
+
+                    # Adds the artist field if there are any artists
+                    if len(artist) == 1:
+                        output.add_field(name="Artist", value=artist[0])
+                    elif len(artist) > 1:
+                        output.add_field(name="Artists", value=", ".join(artist))
+
+                    # Sets the thumbnail and adds the rating and tag fields to the embed
+                    output.add_field(name="Rating", value=rating)
+                    output.add_field(name="Tags", value=", ".join(tagList))
+                    output.set_thumbnail(url=imageURL)
+                else:
+                    # Sets the link to the image URL if verbose mode is not enabled
+                    output = imageURL
+                
+                # Edits the pending message with the results
+                if verbose:
+                    return await self.bot.edit_message(message, "Image found.", embed=output)
+                else:
+                    return await self.bot.edit_message(message, output)
             else:
                 return await self.bot.edit_message(message, "Your search terms gave no results.")
         else:
             if website["search"] != []:
-                return await self.bot.edit_message(message, "https:{}".format(website["search"][0]["image"]))
+                url = "https:{}".format(website["search"][0]["image"])
             else:
                 return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
         return await self.bot.edit_message(message, "Error.")
+
+    # Display results
+    return await self.bot.edit_message(message, )
 
 def check_folder():
     if not os.path.exists("data/pony"):

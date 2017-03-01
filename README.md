@@ -144,10 +144,10 @@ Fetches anime-related images from <https://danbooru.donmai.us/>
 - `[p]dan [tags...]` fetches the latest image with the entered tags
 - `[p]danr [tags...]` fetches a random image, optionally with the entered tags
 - `[p]danfilter [option]` is used to adjust filter options
-  - `list` display all the tags from the current server's filter list
-  - `add [tag]`¹ adds a tag to the current server's filter list
-  - `del [tag]`¹ deletes a tag from the current server's filter list
-  - `del`¹ deletes the current server's filter list, making them use the default
+  - `list` display all the tags from the active server's filter list
+  - `add [tag]`¹ adds a tag to the active server's filter list
+  - `del [tag]`¹ deletes a tag from the active server's filter list
+  - `del`¹ deletes the active server's filter list, making them use the default
 - `[p]danset [option]` is used to adjust cog settings
   - `username [username]`² sets the username used to access the booru
   - `apikey [API key]`² sets the API key used to access the booru
@@ -163,10 +163,10 @@ Fetches furry-related images from <https://e621.net/>
 - `[p]e621 [tags...]` fetches the latest image with the entered tags
 - `[p]e621r [tags...]` fetches a random image, optionally with the entered tags
 - `[p]e621filter [option]` is used to adjust filter options
-  - `list` display all the tags from the current server's filter list
-  - `add [tag]`¹ adds a tag to the current server's filter list
-  - `del [tag]`¹ deletes a tag from the current server's filter list
-  - `del`¹ deletes the current server's filter list, making them use the default
+  - `list` display all the tags from the active server's filter list
+  - `add [tag]`¹ adds a tag to the active server's filter list
+  - `del [tag]`¹ deletes a tag from the active server's filter list
+  - `del`¹ deletes the active server's filter list, making them use the default
 - `[p]e621set [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
@@ -180,10 +180,10 @@ Fetches anime-related images from <https://gelbooru.com/>
 - `[p]gel [tags...]` fetches the latest image with the entered tags
 - `[p]gelr [tags...]` fetches a random image, optionally with the entered tags
 - `[p]gelfilter [option]` is used to adjust filter options
-  - `list` display all the tags from the current server's filter list
-  - `add [tag]`¹ adds a tag to the current server's filter list
-  - `del [tag]`¹ deletes a tag from the current server's filter list
-  - `del`¹ deletes the current server's filter list, making them use the default
+  - `list` display all the tags from the active server's filter list
+  - `add [tag]`¹ adds a tag to the active server's filter list
+  - `del [tag]`¹ deletes a tag from the active server's filter list
+  - `del`¹ deletes the active server's filter list, making them use the default
 - `[p]gelset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
@@ -197,10 +197,10 @@ Fetches anime-related wallpapers from <https://konachan.com/>
 - `[p]kona [tags...]` fetches the latest image with the entered tags
 - `[p]konar [tags...]` fetches a random image, optionally with the entered tags
 - `[p]konafilter [option]` is used to adjust filter options
-  - `list` display all the tags from the current server's filter list
-  - `add [tag]`¹ adds a tag to the current server's filter list
-  - `del [tag]`¹ deletes a tag from the current server's filter list
-  - `del`¹ deletes the current server's filter list, making them use the default
+  - `list` display all the tags from the active server's filter list
+  - `add [tag]`¹ adds a tag to the active server's filter list
+  - `del [tag]`¹ deletes a tag from the active server's filter list
+  - `del`¹ deletes the active server's filter list, making them use the default
 - `[p]konaset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
@@ -214,10 +214,10 @@ Fetches loli-related images from <https://lolibooru.moe/>
 - `[p]loli [tags...]` fetches the latest image with the entered tags
 - `[p]lolir [tags...]` fetches a random image, optionally with the entered tags
 - `[p]lolifilter [option]` is used to adjust filter options
-  - `list` display all the tags from the current server's filter list
-  - `add [tag]`¹ adds a tag to the current server's filter list
-  - `del [tag]`¹ deletes a tag from the current server's filter list
-  - `del`¹ deletes the current server's filter list, making them use the default
+  - `list` display all the tags from the active server's filter list
+  - `add [tag]`¹ adds a tag to the active server's filter list
+  - `del [tag]`¹ deletes a tag from the active server's filter list
+  - `del`¹ deletes the active server's filter list, making them use the default
 - `[p]loliset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
@@ -231,13 +231,14 @@ Fetches pony-related images from <https://derpibooru.org/>
 - `[p]pony [tags...]` fetches the latest image with the entered tags
 - `[p]ponyr [tags...]` fetches a random image, optionally with the entered tags
 - `[p]ponyfilter [option]` is used to adjust filter options
-  - `list` display all the tags from the current server's filter list
-  - `add [tag]`¹ adds a tag to the current server's filter list
-  - `del [tag]`¹ deletes a tag from the current server's filter list
-  - `del`¹ deletes the current server's filter list, making them use the default
+  - `list` display all the tags from the active server's filter list
+  - `add [tag]`¹ adds a tag to the active server's filter list
+  - `del [tag]`¹ deletes a tag from the active server's filter list
+  - `del`¹ deletes the active server's filter list, making them use the default
 - `[p]ponyset [option]` is used to adjust cog settings
   - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
                            list per server
+  - `verbose`¹ toggles a verbose mode which displays more info in an embed
 
 ### Annotations
 
