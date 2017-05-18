@@ -197,9 +197,7 @@ async def fetch_image(self, ctx, randomize, tags):
             if verbose:
                 # Checks for the rating and sets an appropriate color
                 tagList = result[0].get('tags').split(", ")
-                print(tagList)
                 rating = result[0].get('rating')
-                print(rating)
                 if rating == "s":
                     rating = "safe"
                     ratingColor = "00FF00"
