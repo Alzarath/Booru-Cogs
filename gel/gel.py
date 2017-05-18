@@ -7,7 +7,6 @@ from urllib import parse
 import os
 import aiohttp
 import random
-import xml
 
 class Gel:
     def __init__(self, bot):
@@ -149,17 +148,16 @@ class Gel:
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/gel/filters.json", "load")
+    self.settings = fileIO("data/gel/settings.json", "load")
 
-    if server.id in self.settings:
-        if self.settings[server.id]["verbose"]:
-            verbose = True
-        else:
-            verbose = False
-    else:
-        verbose = False
+    # Initialize verbosity as false
+    verbose = False
+
+    if server.id in self.settings and self.settings[server.id]["verbose"]:
+        verbose = True
 
     # initialize base URL
-    search = "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&tags="
+    search = "http://gelbooru.com/index.php?page=dapi&s=post&limit=1&q=index&tags="
     tagSearch = ""
 
     # Apply tags to URL
@@ -171,33 +169,33 @@ async def fetch_image(self, ctx, randomize, tags):
         tagSearch += " ".join(self.filters["default"])
     search += parse.quote_plus(tagSearch)
     
-    # Inform users about image retrieving
+    # Inform users about image retrieval
     message = await self.bot.say("Fetching gel image...")
 
     # Fetch and display the image or an error
     try:
+        # Fetch the xml page
+        if randomize:
+            async with aiohttp.get(search) as r:
+                website = await r.text()
+            attr = website.split('"')[1::2]
+            countStart = website.find("count=\"")
+            countEnd = website.find("\"", countStart+7)
+            count = website[countStart+7:countEnd]
+
+            # Picks a random page
+            pid = str(random.randint(0, int(count)))
+            search += "&json=1&pid={}".format(pid)
+        else:
+            search += "&json=1"
         async with aiohttp.get(search) as r:
-            website = await r.text()
-        attr = website.split('"')[1::2]
-        cindex = 0
-        while cindex != -1:
-            if attr[cindex] == "UTF-8":
-                count = int(attr[cindex+1])
-                cindex = -1
-            else:
-                cindex += 1
-        if count > 0:
-            if randomize:
-                pid = str(round(count * random.random())) # Generates a random number between 0 and the amount of available images
-                search += "&pid=" + pid
-                async with aiohttp.get(search) as r: # Fetches an image with the chosen pid
-                    website = await r.text()
-            result = xml.etree.ElementTree.fromstring(website)
-            imageURL = "https:{}".format(result[0].get('file_url'))
+            website = await r.json()
+        if website:
+            imageURL = "https:{}".format(website[0]['file_url'])
             if verbose:
                 # Checks for the rating and sets an appropriate color
-                tagList = result[0].get('tags').split(", ")
-                rating = result[0].get('rating')
+                tagList = website[0].get('tags').split(", ")
+                rating = website[0].get('rating')
                 if rating == "s":
                     rating = "safe"
                     ratingColor = "00FF00"
@@ -212,24 +210,21 @@ async def fetch_image(self, ctx, randomize, tags):
                     ratingColor = "FFFFFF"
 
                 # Sets the URL to be linked
-                link = "https://gelbooru.com/index.php?page=post&s=view&id={}".format(result[0].get('id'))
+                link = "https://gelbooru.com/index.php?page=post&s=view&id={}".format(website[0].get('id'))
                 
                 # Initialize verbose embed
                 output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
 
                 # Sets the thumbnail and adds the rating and tag fields to the embed
                 output.add_field(name="Rating", value=rating)
-                output.add_field(name="Tags", value=", ".join(tagList))
+                output.add_field(name="Tags", value=", ".join(tagList).replace('_', '\_'))
                 output.set_thumbnail(url=imageURL)
-            else:
-                # Sets the link to the image URL if verbose mode is not enabled
-                output = imageURL
-            
-            # Edits the pending message with the results
-            if verbose:
+
+                # Edits the pending message with the results
                 return await self.bot.edit_message(message, "Image found.", embed=output)
             else:
-                return await self.bot.edit_message(message, output)
+                # Edits the pending message with the result
+                return await self.bot.edit_message(message, imageURL)
         else:
             return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
