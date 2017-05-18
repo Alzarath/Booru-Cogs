@@ -249,5 +249,5 @@ Fetches pony-related images from <https://derpibooru.org/>
 ## Assistance
 
 Need help? Have an idea for a new booru-related cog?
-Post an issue or contact me (Alzarath#8039) from the official
-Red - Discord Bot [Discord Server](https://discord.gg/0k4npTwMvTpv9wrh).
+Post an issue or send a message in the #support\_booru-cogs channel in the
+Red - Cog Support [Discord Server](https://discord.gg/MFrCXm4).
