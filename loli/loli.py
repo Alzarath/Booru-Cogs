@@ -167,6 +167,8 @@ async def fetch_image(self, ctx, randomize, tags):
         tagSearch += " ".join(self.filters[server.id])
     else:
         tagSearch += " ".join(self.filters["default"])
+
+    # Randomize results
     if randomize:
         tagSearch += " order:random"
     search += parse.quote_plus(tagSearch)

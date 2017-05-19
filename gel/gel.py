@@ -175,7 +175,7 @@ async def fetch_image(self, ctx, randomize, tags):
 
     # Fetch and display the image or an error
     try:
-        # Fetch the xml page
+        # Fetch the xml page to randomize the results
         if randomize:
             async with aiohttp.get(search) as r:
                 website = await r.text()
