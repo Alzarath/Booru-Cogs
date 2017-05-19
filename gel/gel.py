@@ -153,6 +153,7 @@ async def fetch_image(self, ctx, randomize, tags):
     # Initialize verbosity as false
     verbose = False
 
+    # Set verbosity to true if the current server has it set as such
     if server.id in self.settings and self.settings[server.id]["verbose"]:
         verbose = True
 
@@ -178,22 +179,27 @@ async def fetch_image(self, ctx, randomize, tags):
         if randomize:
             async with aiohttp.get(search) as r:
                 website = await r.text()
-            attr = website.split('"')[1::2]
+
+            # Gets the amount of results
             countStart = website.find("count=\"")
             countEnd = website.find("\"", countStart+7)
             count = website[countStart+7:countEnd]
 
-            # Picks a random page
+            # Picks a random page and sets the search URL to json
             pid = str(random.randint(0, int(count)))
             search += "&json=1&pid={}".format(pid)
         else:
+            # Sets the search URL to json
             search += "&json=1"
+
+        # Fetches the json page
         async with aiohttp.get(search) as r:
             website = await r.json()
         if website:
+            # Sets the image URL
             imageURL = "https:{}".format(website[0]['file_url'])
             if verbose:
-                # Checks for the rating and sets an appropriate color
+                # Check for the rating and set an appropriate color
                 tagList = website[0].get('tags').split(", ")
                 rating = website[0].get('rating')
                 if rating == "s":
