@@ -80,7 +80,7 @@ Adding a tag to the filter list is simply a matter of running a command and
 supplying the desired tag.  
 `[p][booru]filter add [tag]`
 
-This command may only be run by someone with the **Manager Server** permission
+This command may only be run by someone with the **Manage Server** permission
 
 #### Delete
 
@@ -89,7 +89,7 @@ supplied tag will instead reset the entire server's filter list to the
 default.  
 `[p][booru]filter del [tag]`
 
-This command may only be run by someone with the **Manager Server** permission
+This command may only be run by someone with the **Manage Server** permission
 
 ### Set
 
