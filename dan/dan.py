@@ -221,7 +221,7 @@ async def fetch_image(self, ctx, randomize, tags):
             if "success" not in website:
                 for index in range(len(website)): # Goes through each result until it finds one that works
                     if "file_url" in website[index]:
-                        imageURL = "https://danbooru.donmai.us{}".format(website[index]["file_url"])
+                        imageURL = "https://danbooru.donmai.us{}".format(website[index].get('file_url'))
                         if verbose:
                             # Check for the rating and set an appropriate color
                             tagList = website[index].get('tag_string')
