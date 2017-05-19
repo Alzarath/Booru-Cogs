@@ -151,6 +151,7 @@ class E621:
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/e621/filters.json", "load")
+    self.settings = fileIO("data/e621/settings.json", "load")
 
     # Initialize verbosity as false
     verbose = False
