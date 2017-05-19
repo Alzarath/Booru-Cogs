@@ -7,13 +7,7 @@
     2. [Random Search](#random-search)
     3. [Filter List](#filter-list)
     4. [Set](#set)
-4. [Cogs](#cogs)
-    1. [Dan](#dan)
-    2. [e621](#e621)
-    3. [Gel](#gel)
-    4. [Kona](#kona)
-    5. [Loli](#loli)
-    6. [Pony](#pony)
+4. [Boorus](#boorus)
 5. [Assistance](#assistance)
 
 ## Description
@@ -50,16 +44,26 @@ and
 
 ## Features
 
+Here's a full list of commands that can be run by the cog and detailed
+explanations as to what they do.
+
+Command examples are formatted in the following way:  
+`[p]` stands for the bot's prefix (e.g. `!`)  
+`[booru]` stands the the booru's command (e.g `dan`, `gel`, etc.)  
+`[tags...]` is where you designate any amount of tags to search for  
+`[tag]` is a singular desired tag to be filtered  
+Anything else should be common sense.
+
 ### Search
 
 The default functionality of the cogs. Searches the associated booru for the
-entered tags and posts the latest result in the chat.
+entered tags and posts the latest result in the chat.  
 `[p][booru] [tags...]`
 
 ### Random Search
 
 Searches for a random image from the associated booru, optionally with tags,
-and posts the result in the chat.
+and posts the result in the chat.  
 `[p][booru]r [tags...]`
 
 ### Filter List
@@ -67,43 +71,57 @@ and posts the result in the chat.
 Filter lists can be used to automatically apply tags to any given search. 
 These tags do count toward any sort of tag limit restrictions a booru may 
 contain. Every booru contains a set of tags by default that attempt to prevent
-users from fetching explicit images. These can, however, be removed.
+users from fetching explicit images. These can, however, be removed.  
 `[p][booru]filter list`
-Adding a tag to the filter list is simply a matter of running a command and
-supplying the desired tag.
 
 #### Add
 
+Adding a tag to the filter list is simply a matter of running a command and
+supplying the desired tag.  
 `[p][booru]filter add [tag]`
-Similarly, deleting a filter is done similarly. Running the delete command
-without a supplied tag will instead reset the server's filter list to the
-default.
+
+This command may only be run by someone with the **Manager Server** permission
 
 #### Delete
 
+Deleting a filter is done similarly. Running the delete command without a
+supplied tag will instead reset the entire server's filter list to the
+default.  
 `[p][booru]filter del [tag]`
+
+This command may only be run by someone with the **Manager Server** permission
 
 ### Set
 
 The 'set' command is used to apply different settings to a filter. These are
 often global settings that affect every server and should only be done in a
-direct message with the bot. What's a "global setting"? A setting that can
-be set and is used by every single server which uses the bot.
+direct message with the bot.
 
 #### Username
 
 Sets the username that's used to access the website. This can be useful if a
 website has premium features for members that need to be logged in to access
-(e.g. reduced tag limitations). This is a global setting and is only useable by
-a few cogs.
+(e.g. reduced tag limitations). This is a global setting.  
 `[p][booru]set username [Username]`
+
+Limited to:
+* Gel
+
+This command may only be run by the **Bot Owner** and should be done in a private
+message with the bot.
 
 #### API Key
 
 The following is used in conjunction with the Username to give premium members
 access to their benefits. This is a global setting that is only useable by a
-few cogs.
+few cogs.  
 `[p][booru]set apikey [API key]`
+
+Limited to:
+* Gel
+
+This command may only be run by the **Bot Owner** and should be done in a private
+message with the bot.
 
 **Warning.** There is a security risk you should be aware of:
 
@@ -127,124 +145,47 @@ attempting to steal your account information through this is probably small.
 This command is used to restrict the amount of filters that can be added to
 each individual server. This should prevent servers from being able to fill up
 the host computer's hard drive with filters. By default, a server can have 100
-filters. This is a global setting.
+filters. This is a global setting.  
 `[p][booru]set maxfilters [Amount]`
 
-## Cogs
+This command may only be run by the **Bot Owner**.
 
-This is a full list of cogs and their commands. Each of these cogs only have
-access to the commands that are listed under them.
+#### Verbose
+
+Toggle Verbose mode on and off. With verbose mode enabled, instead of simply
+getting an image URL, an embed is posted that contains the link to the image's
+page, the image's content rating, and the image's tags.  
+`[p][booru]set verbose [on|off]`
+
+This command may only be run by someone with the **Manager Server** permission
+
+## Boorus
+
+This is a full list of the Booru sites available to you.
 
 ### Dan
 
 Fetches anime-related images from <https://danbooru.donmai.us/>
 
-#### Dan Commands
-
-- `[p]dan [tags...]` fetches the latest image with the entered tags
-- `[p]danr [tags...]` fetches a random image, optionally with the entered tags
-- `[p]danfilter [option]` is used to adjust filter options
-  - `list` display all the tags from the active server's filter list
-  - `add [tag]`¹ adds a tag to the active server's filter list
-  - `del [tag]`¹ deletes a tag from the active server's filter list
-  - `del`¹ deletes the active server's filter list, making them use the default
-- `[p]danset [option]` is used to adjust cog settings
-  - `username [username]`² sets the username used to access the booru
-  - `apikey [API key]`² sets the API key used to access the booru
-  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
-
 ### e621
 
 Fetches furry-related images from <https://e621.net/>
-
-#### e621 Commands
-
-- `[p]e621 [tags...]` fetches the latest image with the entered tags
-- `[p]e621r [tags...]` fetches a random image, optionally with the entered tags
-- `[p]e621filter [option]` is used to adjust filter options
-  - `list` display all the tags from the active server's filter list
-  - `add [tag]`¹ adds a tag to the active server's filter list
-  - `del [tag]`¹ deletes a tag from the active server's filter list
-  - `del`¹ deletes the active server's filter list, making them use the default
-- `[p]e621set [option]` is used to adjust cog settings
-  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
 
 ### Gel
 
 Fetches anime-related images from <https://gelbooru.com/>
 
-#### Gel Commands
-
-- `[p]gel [tags...]` fetches the latest image with the entered tags
-- `[p]gelr [tags...]` fetches a random image, optionally with the entered tags
-- `[p]gelfilter [option]` is used to adjust filter options
-  - `list` display all the tags from the active server's filter list
-  - `add [tag]`¹ adds a tag to the active server's filter list
-  - `del [tag]`¹ deletes a tag from the active server's filter list
-  - `del`¹ deletes the active server's filter list, making them use the default
-- `[p]gelset [option]` is used to adjust cog settings
-  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
-  - `verbose`¹ toggles a verbose mode which displays more info in an embed
-
 ### Kona
 
 Fetches anime-related wallpapers from <https://konachan.com/>
-
-#### Kona Commands
-
-- `[p]kona [tags...]` fetches the latest image with the entered tags
-- `[p]konar [tags...]` fetches a random image, optionally with the entered tags
-- `[p]konafilter [option]` is used to adjust filter options
-  - `list` display all the tags from the active server's filter list
-  - `add [tag]`¹ adds a tag to the active server's filter list
-  - `del [tag]`¹ deletes a tag from the active server's filter list
-  - `del`¹ deletes the active server's filter list, making them use the default
-- `[p]konaset [option]` is used to adjust cog settings
-  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
 
 ### Loli
 
 Fetches loli-related images from <https://lolibooru.moe/>
 
-#### Loli Commands
-
-- `[p]loli [tags...]` fetches the latest image with the entered tags
-- `[p]lolir [tags...]` fetches a random image, optionally with the entered tags
-- `[p]lolifilter [option]` is used to adjust filter options
-  - `list` display all the tags from the active server's filter list
-  - `add [tag]`¹ adds a tag to the active server's filter list
-  - `del [tag]`¹ deletes a tag from the active server's filter list
-  - `del`¹ deletes the active server's filter list, making them use the default
-- `[p]loliset [option]` is used to adjust cog settings
-  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
-
 ### Pony
 
 Fetches pony-related images from <https://derpibooru.org/>
-
-#### Pony Commands
-
-- `[p]pony [tags...]` fetches the latest image with the entered tags
-- `[p]ponyr [tags...]` fetches a random image, optionally with the entered tags
-- `[p]ponyfilter [option]` is used to adjust filter options
-  - `list` display all the tags from the active server's filter list
-  - `add [tag]`¹ adds a tag to the active server's filter list
-  - `del [tag]`¹ deletes a tag from the active server's filter list
-  - `del`¹ deletes the active server's filter list, making them use the default
-- `[p]ponyset [option]` is used to adjust cog settings
-  - `maxfilters [number]`² sets the maximum tags allowed in the cog's filter
-                           list per server
-  - `verbose`¹ toggles a verbose mode which displays more info in an embed
-
-### Annotations
-
-¹Commands may only be used by users with the manage\_server permission
-²Commands may only be used by the bot owner
 
 ## Assistance
 
