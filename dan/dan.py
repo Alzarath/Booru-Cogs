@@ -146,16 +146,54 @@ class Dan:
         self.settings["maxfilters"] = maxfilters
         fileIO("data/dan/settings.json","save",self.settings)
         await self.bot.say("Maximum filters allowed per server for dan set to '{}'.".format(maxfilters))
+    
+    @danset.command(pass_context=True,name="verbose")
+    @checks.admin_or_permissions(manage_server=True)
+    async def _verbose_danset(self, ctx, toggle : str = "toggle"):
+        """Toggles verbose mode"""
+        server = ctx.message.server
+        if server.id not in self.settings:
+            self.settings[server.id] = {"verbose":False}
+            fileIO("data/dan/settings.json", "save", self.settings)
+            self.settings = fileIO("data/dan/settings.json", "load")
+        if toggle.lower() == "on" or toggle.lower() == "true" or toggle.lower() == "enable":
+            if not self.settings[server.id]["verbose"]:
+                self.settings[server.id]["verbose"] = True
+                await self.bot.say("Verbose mode is now enabled.")
+            else:
+                await self.bot.say("Verbose mode is already enabled.")
+        elif toggle.lower() == "off" or toggle.lower() == "false" or toggle.lower() == "disable":
+            if self.settings[server.id]["verbose"]:
+                self.settings[server.id]["verbose"] = False
+                await self.bot.say("Verbose mode is now disabled.")
+            else:
+                await self.bot.say("Verbose mode is already disabled.")
+        else:
+            if self.settings[server.id]["verbose"]:
+                self.settings[server.id]["verbose"] = False
+                await self.bot.say("Verbose mode is now disabled.")
+            else:
+                self.settings[server.id]["verbose"] = True
+                await self.bot.say("Verbose mode is now enabled.")
+        fileIO("data/dan/settings.json", "save", self.settings)
 
 async def fetch_image(self, ctx, randomize, tags):
     server = ctx.message.server
     self.filters = fileIO("data/dan/filters.json", "load")
     self.settings = fileIO("data/dan/settings.json", "load")
 
+    # Initialize verbosity as false
+    verbose = False
+
+    # Set verbosity to true if the current server has it set as such
+    if server.id in self.settings and self.settings[server.id]["verbose"]:
+        verbose = True
+
+    # Initialize base URL
     search = "http://danbooru.donmai.us/posts.json?tags="
     tagSearch = ""
 
-    # Assign tags
+    # Assign tags to URL
     if tags:
         tagSearch += "{} ".format(" ".join(tags))
     if server.id in self.filters:
@@ -172,8 +210,10 @@ async def fetch_image(self, ctx, randomize, tags):
     if self.settings["username"] != "" and self.settings["api_key"] != "":
         search += "&login={}&api_key={}".format(self.settings["username"], self.settings["api_key"])
 
+    # Inform users about image retrieval
     message = await self.bot.say("Fetching dan image...")
 
+    # Fetch and display the image or an error
     try:
         async with aiohttp.get(search) as r:
             website = await r.json()
@@ -181,9 +221,43 @@ async def fetch_image(self, ctx, randomize, tags):
             if "success" not in website:
                 for index in range(len(website)): # Goes through each result until it finds one that works
                     if "file_url" in website[index]:
-                        return await self.bot.edit_message(message, "http://danbooru.donmai.us{}".format(website[index]["file_url"]))
+                        imageURL = "https://danbooru.donmai.us{}".format(website[index]["file_url"])
+                        if verbose:
+                            # Check for the rating and set an appropriate color
+                            tagList = website[index].get('tag_string')
+                            rating = website[index].get('rating')
+                            if rating == "s":
+                                rating = "safe"
+                                ratingColor = "00FF00"
+                            elif rating == "q":
+                                rating = "questionable"
+                                ratingColor = "FF9900"
+                            elif rating == "e":
+                                rating = "explicit"
+                                ratingColor = "FF0000"
+                            if not rating:
+                                rating = "unknown"
+                                ratingColor = "FFFFFF"
+
+                            # Sets the URL to be linked
+                            link = "https://danbooru.donmai.us/posts/{}".format(website[index].get('id'))
+                            
+                            # Initialize verbose embed
+                            output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
+
+                            # Sets the thumbnail and adds the rating and tag fields to the embed
+                            output.add_field(name="Rating", value=rating)
+                            output.add_field(name="Tags", value=tagList.replace('_', '\_'))
+                            output.set_thumbnail(url=imageURL)
+
+                            # Edits the pending message with the results
+                            return await self.bot.edit_message(message, "Image found.", embed=output)
+                        else:
+                            # Edits the pending message with the result
+                            return await self.bot.edit_message(message, imageURL)
                 return await self.bot.edit_message(message, "Cannot find an image that can be viewed by you.")
             else:
+                # Edits the pending message with an error received by the server
                 return await self.bot.edit_message(message, "{}".format(website["message"]))
         else:
             return await self.bot.edit_message(message, "Your search terms gave no results.")
