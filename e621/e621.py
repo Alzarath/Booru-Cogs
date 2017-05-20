@@ -148,21 +148,30 @@ class E621:
         fileIO("data/e621/settings.json", "save", self.settings)
         await self.bot.say("Maximum filters allowed per server for e621 set to '{}'.".format(maxfilters))
 
-async def fetch_image(self, ctx, randomize, tags):
+async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
     server = ctx.message.server
     self.filters = fileIO("data/e621/filters.json", "load")
     self.settings = fileIO("data/e621/settings.json", "load")
 
-    # Initialize verbosity as false
-    verbose = False
+    # Initialize variables
+    artist      = "unknown artist"
+    artists     = ""
+    artistList  = []
+    embedLink   = ""
+    embedTitle  = ""
+    imageId     = ""
+    message     = ""
+    output      = None
+    rating      = ""
+    ratingColor = "FFFFFF"
+    ratingWord  = "unknown"
+    search      = "http://e621.net/post/index.json?limit=1&tags="
+    tagSearch   = ""
+    verbose     = False
 
     # Set verbosity to true if the current server has it set as such
     if server.id in self.settings and self.settings[server.id]["verbose"]:
         verbose = True
-
-    # initialize base URL
-    search = "http://e621.net/post/index.json?limit=1&tags="
-    tagSearch = ""
 
     # Assign tags to URL
     if tags:
@@ -188,31 +197,49 @@ async def fetch_image(self, ctx, randomize, tags):
             if "success" not in website:
                 imageURL = website[0].get('file_url')
                 if verbose:
-                    # Check for the rating and set an appropriate color
-                    tagList = website[0].get('tags')
-                    rating = website[0].get('rating')
-                    if rating == "s":
-                        rating = "safe"
-                        ratingColor = "00FF00"
-                    elif rating == "q":
-                        rating = "questionable"
-                        ratingColor = "FF9900"
-                    elif rating == "e":
-                        rating = "explicit"
-                        ratingColor = "FF0000"
-                    if not rating:
-                        rating = "unknown"
-                        ratingColor = "FFFFFF"
+                    # Fetches the image ID
+                    imageId = website[0].get('id')
+
+                    # Sets the embed title
+                    embedTitle = "e621 Image #{}".format(imageId)
 
                     # Sets the URL to be linked
-                    link = "https://e621.net/post/show/{}".format(website[0].get('id'))
+                    embedLink = "https://e621.net/post/show/{}".format(imageId)
+
+                    # Check for the rating and set an appropriate color
+                    rating = website[0].get('rating')
+                    if rating == "s":
+                        ratingColor = "00FF00"
+                        ratingWord = "safe"
+                    elif ratingWord == "q":
+                        ratingColor = "FF9900"
+                        ratingWord = "questionable"
+                    elif rating == "e":
+                        ratingColor = "FF0000"
+                        ratingWord = "explicit"
+
+                    # Grabs the artist(s)
+                    artistList = website[0].get('artist')
+
+                    # Determine if there are multiple artists
+                    if len(artistList) == 1:
+                        artist = artistList[0].replace('_', ' ')
+                    elif len(artistList > 1):
+                        artists = ", ".join(artistList).replace('_', ' ')
+
+                    # Sets the tags to be listed
+                    tagList = website[0].get('tags').replace(' ', ', ').replace('_', '\_')
                     
                     # Initialize verbose embed
-                    output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
+                    output = discord.Embed(title=embedTitle, url=embedLink, colour=discord.Colour(value=int(ratingColor, 16)))
 
-                    # Sets the thumbnail and adds the rating and tag fields to the embed
-                    output.add_field(name="Rating", value=rating)
-                    output.add_field(name="Tags", value=tagList.replace('_', '\_'))
+                    # Sets the thumbnail and adds the rating, artist, and tag fields to the embed
+                    output.add_field(name="Rating", value=ratingWord)
+                    if artist:
+                        output.add_field(name="Artist", value=artist)
+                    elif artist:
+                        output.add_field(name="Artists", value=artists)
+                    output.add_field(name="Tags", value=tagList, inline=False)
                     output.set_thumbnail(url=imageURL)
 
                     # Edits the pending message with the results

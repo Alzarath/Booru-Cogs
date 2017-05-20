@@ -177,21 +177,30 @@ class Dan:
                 await self.bot.say("Verbose mode is now enabled.")
         fileIO("data/dan/settings.json", "save", self.settings)
 
-async def fetch_image(self, ctx, randomize, tags):
+async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
     server = ctx.message.server
     self.filters = fileIO("data/dan/filters.json", "load")
     self.settings = fileIO("data/dan/settings.json", "load")
 
-    # Initialize verbosity as false
-    verbose = False
+    #Initialize variables
+    artist      = "unknown artist"
+    artists     = ""
+    artistList  = []
+    embedLink   = ""
+    embedTitle  = ""
+    imageId     = ""
+    message     = ""
+    output      = None
+    rating      = ""
+    ratingColor = "FFFFFF"
+    ratingWord  = "unknown"
+    search      = "http://danbooru.donmai.us/posts.json?tags="
+    tagSearch   = ""
+    verbose     = False
 
     # Set verbosity to true if the current server has it set as such
     if server.id in self.settings and self.settings[server.id]["verbose"]:
         verbose = True
-
-    # Initialize base URL
-    search = "http://danbooru.donmai.us/posts.json?tags="
-    tagSearch = ""
 
     # Assign tags to URL
     if tags:
@@ -221,33 +230,53 @@ async def fetch_image(self, ctx, randomize, tags):
             if "success" not in website:
                 for index in range(len(website)): # Goes through each result until it finds one that works
                     if "file_url" in website[index]:
+                        # Sets the image URL
                         imageURL = "https://danbooru.donmai.us{}".format(website[index].get('file_url'))
                         if verbose:
-                            # Check for the rating and set an appropriate color
-                            tagList = website[index].get('tag_string')
-                            rating = website[index].get('rating')
-                            if rating == "s":
-                                rating = "safe"
-                                ratingColor = "00FF00"
-                            elif rating == "q":
-                                rating = "questionable"
-                                ratingColor = "FF9900"
-                            elif rating == "e":
-                                rating = "explicit"
-                                ratingColor = "FF0000"
-                            if not rating:
-                                rating = "unknown"
-                                ratingColor = "FFFFFF"
+                            # Fetches the image ID
+                            imageId = website[index].get('id')
+
+                            # Sets the embed title
+                            embedTitle = "Danbooru Image #{}".format(imageId)
 
                             # Sets the URL to be linked
-                            link = "https://danbooru.donmai.us/posts/{}".format(website[index].get('id'))
+                            embedLink = "https://danbooru.donmai.us/posts/{}".format(imageId)
                             
+                            # Checks for the rating and sets an appropriate color
+                            rating = website[index].get('rating')
+                            if rating == "s":
+                                ratingColor = "00FF00"
+                                ratingWord = "safe"
+                            elif rating == "q":
+                                ratingColor = "FF9900"
+                                ratingWord = "questionable"
+                            elif rating == "e":
+                                ratingColor = "FF0000"
+                                ratingWord = "explicit"
+
+                            # Grabs the artist(s)
+                            artistList = website[index].get('tag_string_artist').split()
+
+                            # Determine if there are multiple artists
+                            if len(artistList) == 1:
+                                artist = artistList[0].replace('_', ' ')
+                            elif len(artistList) > 1:
+                                artists = ", ".join(artistList).replace('_', ' ')
+                                artist = ""
+
+                            # Sets the tags to be listed
+                            tagList = website[index].get('tag_string').replace(' ', ', ').replace('_', '\_')
+
                             # Initialize verbose embed
-                            output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
+                            output = discord.Embed(title=embedTitle, url=embedLink, colour=discord.Colour(value=int(ratingColor, 16)))
 
                             # Sets the thumbnail and adds the rating and tag fields to the embed
-                            output.add_field(name="Rating", value=rating)
-                            output.add_field(name="Tags", value=tagList.replace('_', '\_'))
+                            output.add_field(name="Rating", value=ratingWord)
+                            if artist:
+                                output.add_field(name="Artist", value=artist)
+                            elif artists:
+                                output.add_field(name="Artists", value=artists)
+                            output.add_field(name="Tags", value=tagList, inline=False)
                             output.set_thumbnail(url=imageURL)
 
                             # Edits the pending message with the results

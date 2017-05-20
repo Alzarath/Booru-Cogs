@@ -146,24 +146,32 @@ class Pony:
         fileIO("data/pony/settings.json", "save", self.settings)
         await self.bot.say("Maximum filters allowed per server for pony set to '{}'.".format(maxfilters))
 
-async def fetch_image(self, ctx, randomize, tags):
+async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
     server = ctx.message.server
     self.filters = fileIO("data/pony/filters.json", "load")
     self.settings = fileIO("data/pony/settings.json", "load")
 
-    if server.id in self.settings:
-        if self.settings[server.id]["verbose"]:
-            verbose = True
-        else:
-            verbose = False
-    else:
-        verbose = False
+    #Initialize variables
+    artist      = "unknown artist"
+    artists     = ""
+    artistList  = []
+    embedLink   = ""
+    embedTitle  = ""
+    imageId     = ""
+    message     = ""
+    output      = None
+    rating      = ""
+    ratingColor = "FFFFFF"
+    ratingWord  = "unknown"
+    search      = "https://derpibooru.org/search.json?q="
+    tagSearch   = ""
+    verbose     = False
 
-    # Initialize base URL
-    search = "https://derpibooru.org/search.json?q="
-    tagSearch = ""
+    # Set verbosity to true if the current server has it set as such
+    if server.id in self.settings and self.settings[server.id]["verbose"]:
+        verbose = True
 
-    # Apply tags to URL
+    # Assign tags to URL
     if tags:
         tagSearch += "{} ".format(" ".join(tags))
     if server.id in self.filters:
@@ -189,14 +197,14 @@ async def fetch_image(self, ctx, randomize, tags):
     # Inform users about image retrieving
     message = await self.bot.say("Fetching pony image...")
 
-    # Fetch and display the image or an error
+    # Fetch the image or display an error
     try:
         async with aiohttp.get(search) as r:
             website = await r.json()
         if randomize:
             if "id" in website:
-                imgid = str(website["id"])
-                async with aiohttp.get("https://derpibooru.org/images/" + imgid + ".json") as r:
+                imageId = str(website["id"])
+                async with aiohttp.get("https://derpibooru.org/images/" + imageId + ".json") as r:
                     website = await r.json()
                 imageURL = "https:{}".format(website["image"])
             else:
@@ -212,52 +220,58 @@ async def fetch_image(self, ctx, randomize, tags):
 
     # If verbose mode is enabled, create an embed and fill it with information
     if verbose:
-        # Checks for the rating and sets an appropriate color
-        tagList = website["tags"].split(", ")
-        for i in range(0, len(tagList)):
-            if tagList[i] == "safe":
-                rating = tagList.pop(i)
-                ratingColor = "00FF00"
-                break
-            if tagList[i] == "suggestive":
-                rating = tagList.pop(i)
-                ratingColor = "FFFF00"
-                break
-            if tagList[i] == "questionable":
-                rating = tagList.pop(i)
-                ratingColor = "FF9900"
-                break
-            if tagList[i] == "explicit":
-                ratingColor = "FF0000"
-                rating = tagList.pop(i)
-                break
-        if not rating:
-            ratingColor = "FFFFFF"
-            rating = "unknown"
+        # Sets the embed title
+        embedTitle = "Derpibooru Image #{}".format(imageId)
 
         # Sets the URL to be linked
-        link = "https://derpibooru.org/{}".format(website["id"])
-        
-        # Initialize verbose embed
-        output = discord.Embed(description=link, colour=discord.Colour(value=int(ratingColor, 16)))
+        embedLink = "https://derpibooru.org/{}".format(imageId)
 
-        # Checks for artists
-        artist = []
+        # Populates the tag list
+        tagList = website["tags"].split(", ")
+        
+        # Checks for the rating and sets an appropriate color
+        for i in range(0, len(tagList)):
+            if tagList[i] == "safe":
+                ratingColor = "00FF00"
+                ratingWord = tagList.pop(i)
+                break
+            elif tagList[i] == "suggestive":
+                ratingColor = "FFFF00"
+                ratingWord = tagList.pop(i)
+                break
+            elif tagList[i] == "questionable":
+                ratingColor = "FF9900"
+                ratingWord = tagList.pop(i)
+                break
+            elif tagList[i] == "explicit":
+                ratingColor = "FF0000"
+                ratingWord = tagList.pop(i)
+                break
+
+        # Grabs the artist(s)
         for i in range(0, len(tagList)):
             if "artist:" in tagList[i]:
                 while "artist:" in tagList[i]:
-                    artist.append(tagList.pop(i)[7:])
+                    artistList.append(tagList.pop(i)[7:])
                 break
 
-        # Adds the artist field if there are any artists
-        if len(artist) == 1:
-            output.add_field(name="Artist", value=artist[0])
-        elif len(artist) > 1:
-            output.add_field(name="Artists", value=", ".join(artist))
+        # Determine if there are multiple artists
+        if len(artistList) == 1:
+            artist = artistList[0]
+        elif len(artistList) > 1:
+            artists = ", ".join(artistList)
+            artist = ""
+
+        # Initialize verbose embed
+        output = discord.Embed(title=embedTitle, url=embedLink, colour=discord.Colour(value=int(ratingColor, 16)))
 
         # Sets the thumbnail and adds the rating and tag fields to the embed
-        output.add_field(name="Rating", value=rating)
-        output.add_field(name="Tags", value=", ".join(tagList))
+        output.add_field(name="Rating", value=ratingWord)
+        if artist:
+            output.add_field(name="Artist", value=artist)
+        elif artists:
+            output.add_field(name="Artists", value=artists)
+        output.add_field(name="Tags", value=", ".join(tagList), inline=False)
         output.set_thumbnail(url=imageURL)
     else:
         # Sets the link to the image URL if verbose mode is not enabled
