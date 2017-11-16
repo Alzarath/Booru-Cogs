@@ -3,5 +3,6 @@
     "AUTHOR" : "Alzarath",
     "SHORT" : "Search https://derpibooru.org/ for pony pictures.",
     "DESCRIPTION" : "Search https://derpibooru.org/ for pony pictures.\n\nUsage: [p]pony [tags...]: Fetch the latest pony image\n[p]ponyr [tags...]: Fetch a random pony image\n[p]ponyfilter list: Lists available Derpibooru filters\n[p]ponyfilter set [filter name]: Set the current server's filter\n[p]ponyfilter add [filter name] [filter id]: Add a filter\n[p]ponyfilter del [filter name]: Delete a filter\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
-    "DISABLED" : false
+    "TAGS" : [ "images", "pony", "search" ],
+    "HIDDEN" : false
 }

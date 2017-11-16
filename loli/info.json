@@ -3,5 +3,6 @@
     "AUTHOR" : "Alzarath",
     "SHORT" : "Search https://lolibooru.moe/ for loli pictures",
     "DESCRIPTION" : "Search https://lolibooru.moe/ for loli pictures.\n\nUsage: [p]loli [tags...]: Fetch the latest image\n[p]lolir [tags...]: Fetch a random image\n[p]lolifilter list: Lists all filters applied to the server\n[p]lolifilter add [filter name]: Add a filter to the server\n[p]lolifilter del [filter name]: Delete a filter from the server\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
-    "DISABLED" : false
+    "TAGS" : [ "anime", "images", "search" ],
+    "HIDDEN" : true
 }

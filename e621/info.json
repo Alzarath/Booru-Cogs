@@ -3,5 +3,6 @@
     "AUTHOR" : "Alzarath",
     "SHORT" : "Search https://e621.net/ for furry pictures",
     "DESCRIPTION" : "Search https://e621.net/ for furry pictures.\n\nUsage: [p]e621 [tags...]: Fetch the latest image\n[p]e621r [tags...]: Fetch a random image\n[p]e621filter list: Lists all filters applied to the server\n[p]e621filter add [filter name]: Add a filter to the server\n[p]e621filter del [filter name]: Delete a filter from the server\n\nDisclaimer: By default this cog does not display NSFW content, but it is able to through setting filters.",
-    "DISABLED" : false
+    "TAGS" : [ "furry", "images", "search" ],
+    "HIDDEN" : false
 }
