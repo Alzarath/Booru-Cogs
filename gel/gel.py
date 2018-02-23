@@ -186,7 +186,7 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
     try:
         # Fetch the xml page to randomize the results
         if randomize:
-            async with aiohttp.get(search) as r:
+            async with aiohttp.get(search, headers={'User-Agent': "Booru-Cogs (https://git.io/booru)"}) as r:
                 website = await r.text()
 
             # Gets the amount of results
@@ -202,11 +202,11 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
             search += "&json=1"
 
         # Fetches the json page
-        async with aiohttp.get(search) as r:
+        async with aiohttp.get(search, headers={'User-Agent': "Booru-Cogs (https://git.io/booru"}) as r:
             website = await r.json()
         if website:
             # Sets the image URL
-            imageURL = "https:{}".format(website[0]['file_url'])
+            imageURL = "{}".format(website[0]['file_url'])
             if verbose:
                 # Fetches the image ID
                 imageId = website[0].get('id')

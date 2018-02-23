@@ -199,7 +199,7 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
 
     # Fetch the image or display an error
     try:
-        async with aiohttp.get(search) as r:
+        async with aiohttp.get(search, headers={'User-Agent': "Booru-Cogs (https://git.io/booru)"}) as r:
             website = await r.json()
         if randomize:
             if "id" in website:
