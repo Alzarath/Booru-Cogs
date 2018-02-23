@@ -191,7 +191,7 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
 
     # Fetch and display the image or an error
     try:
-        async with aiohttp.get(search) as r:
+        async with aiohttp.get(search, headers={'User-Agent': "Booru-cogs (https://git.io/booru)"}) as r:
             website = await r.json()
         if website != []:
             if "success" not in website:
@@ -202,7 +202,7 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
 
                     # Sets the embed title
                     embedTitle = "e621 Image #{}".format(imageId)
-
+    
                     # Sets the URL to be linked
                     embedLink = "https://e621.net/post/show/{}".format(imageId)
 
