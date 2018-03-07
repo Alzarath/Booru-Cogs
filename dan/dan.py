@@ -230,8 +230,13 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
             if "success" not in website:
                 for index in range(len(website)): # Goes through each result until it finds one that works
                     if "file_url" in website[index]:
+                        fileURL = website[index].get('file_url')
                         # Sets the image URL
-                        imageURL = "https://danbooru.donmai.us{}".format(website[index].get('file_url'))
+                        if fileURL[0] != "/":
+                            imageURL = fileURL
+                        else:
+                            imageURL = "https://danbooru.donmai.us{}".format(fileURL)
+
                         if verbose:
                             # Fetches the image ID
                             imageId = website[index].get('id')
@@ -287,7 +292,7 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
                 return await self.bot.edit_message(message, "Cannot find an image that can be viewed by you.")
             else:
                 # Edits the pending message with an error received by the server
-                return await self.bot.edit_message(message, "{}".format(website["message"]))
+                return await self.bot.edit_message(message, "Error. Danbooru says: {}".format(website["message"]))
         else:
             return await self.bot.edit_message(message, "Your search terms gave no results.")
     except:
