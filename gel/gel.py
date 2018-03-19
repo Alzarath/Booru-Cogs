@@ -192,10 +192,10 @@ async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
             # Gets the amount of results
             countStart = website.find("count=\"")
             countEnd = website.find("\"", countStart+7)
-            count = website[countStart+7:countEnd]
+            count = min(int(website[countStart+7:countEnd]), 20000)
 
             # Picks a random page and sets the search URL to json
-            pid = str(random.randint(0, int(count)))
+            pid = str(random.randint(0, count))
             search += "&json=1&pid={}".format(pid)
         else:
             # Sets the search URL to json
