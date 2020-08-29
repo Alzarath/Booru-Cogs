@@ -12,12 +12,14 @@
 
 ## Description
 
-This repository will be used to host image board-related cogs. They're used to
-fetch and display images.
+This repository was used to host image board-related cogs. They were used to
+fetch and display images. These cogs were for Red V2 and may or may not still
+work there. They do not work for V3 and are no longer maintained. The
+repository remains for historical purposes.
 
 ## Installation
 
-To install these cogs, make sure Red-DiscordBot is up-to-date and add the
+To install these cogs, make sure Red-DiscordBot is running V2 and add the
 repository.
 
 ```
@@ -189,6 +191,4 @@ Fetches pony-related images from <https://derpibooru.org/>
 
 ## Assistance
 
-Need help? Have an idea for a new booru-related cog?
-Post an issue or send a message in the #support\_booru-cogs channel in the
-Red - Cog Support [Discord Server](https://discord.gg/MFrCXm4).
+This repository is no longer supported. You're on your own, pal.
